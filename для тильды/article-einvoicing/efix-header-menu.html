@@ -1,0 +1,264 @@
+<!-- EFIX · ШАПКА САЙТА С ВЫПАДАЮЩИМ МЕНЮ И КОНТАКТАМИ (один блок T123 «HTML-код»)
+     Куда ставить: страница-хедер сайта (Настройки сайта → Ещё → Хедер и футер), вместо текущего Zero Block шапки.
+
+     Как править меню: ниже в разметке, раздел <nav>. Каждый пункт — строка <a href="...">Название</a>.
+     Страницы, которых пока нет на сайте, помечены class="soon" — они скрыты. Когда страница опубликована — уберите class="soon".
+     Третий уровень: внутри пункта добавьте <div class="sub3">…ссылки…</div> (пример — в инструкции).
+     В редакторе Tilda блок выглядит серым прямоугольником — смотрите в «Предпросмотре». -->
+<style>
+.efm-space{height:var(--efm-h,112px)}
+.efm{--t:#FFFDF6;--m:#8B8C88;--gold:#CDA64F;--teal:#65E8CC;--bg:#181922;--panel:#23252E;--line:#38393C;--in:#22252E;
+  position:fixed;top:0;left:0;right:0;z-index:9990;font-family:Manrope,Arial,sans-serif;color:var(--t);background:var(--bg);border-bottom:1px solid rgba(255,253,246,.06);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .3s;-webkit-font-smoothing:antialiased}
+.efm.hide{transform:translateY(-100%)}
+.efm.shadow{box-shadow:0 12px 30px -18px rgba(0,0,0,.7)}
+.efm *{box-sizing:border-box;margin:0;padding:0}
+.efm a{color:inherit;text-decoration:none}
+.efm button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.efm .bar{position:absolute;left:0;top:0;height:3px;width:0;background:linear-gradient(90deg,var(--gold),#E9C77C);z-index:2;transition:width .1s linear}
+.efm .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+
+/* верхняя строка */
+.efm .top{display:flex;align-items:center;gap:22px;height:36px;font-size:13px;color:var(--m);border-bottom:1px solid rgba(255,253,246,.05)}
+.efm .top a{transition:color .2s}
+.efm .top a:hover{color:var(--t)}
+.efm .top .sp{flex:1}
+.efm .soc{display:flex;gap:12px;align-items:center}
+.efm .soc img{width:16px;height:16px;opacity:.7;transition:opacity .2s,transform .2s}
+.efm .soc a:hover img{opacity:1;transform:translateY(-1px)}
+.efm .lang{padding:2px 9px;border:1px solid rgba(255,253,246,.2);border-radius:8px;font-weight:600}
+.efm .ask{color:var(--gold)!important;font-weight:600;display:flex;align-items:center;gap:6px}
+.efm .ask::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(205,166,79,.18)}
+
+/* основная строка */
+.efm .row{display:flex;align-items:center;justify-content:space-between;gap:20px;height:76px}
+.efm .logo img{height:40px;width:auto;display:block}
+.efm nav{display:flex;align-items:center;gap:2px}
+.efm .it{position:relative}
+.efm .it > a,.efm .it > button{position:relative;display:flex;align-items:center;gap:6px;height:44px;padding:0 11px;border-radius:10px;font-size:15px;font-weight:500;color:var(--m);white-space:nowrap;transition:color .2s,background .2s}
+.efm .it:hover > a,.efm .it:hover > button,.efm .it:focus-within > a,.efm .it:focus-within > button,.efm .it.open > a,.efm .it.open > button{color:var(--t);background:rgba(255,253,246,.05)}
+.efm .it.cur > a,.efm .it.cur > button{color:var(--t)}
+.efm .it.cur > a::before,.efm .it.cur > button::before{content:"";position:absolute;left:11px;right:11px;bottom:5px;height:2px;border-radius:2px;background:var(--teal)}
+.efm .dd > a::after,.efm .dd > button::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);margin-left:2px;transition:transform .25s}
+.efm .dd.open > a::after,.efm .dd.open > button::after{transform:rotate(-135deg) translateY(-1px)}
+
+/* выпадающее меню */
+.efm .sub{position:absolute;top:calc(100% + 6px);left:0;min-width:300px;padding:8px;border-radius:16px;background:var(--panel);border:1px solid var(--line);box-shadow:0 24px 50px -16px rgba(0,0,0,.7);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s,transform .2s,visibility .2s}
+.efm .sub::before{content:"";position:absolute;left:0;right:0;top:-12px;height:12px}
+.efm .it.open > .sub{opacity:1;visibility:visible;transform:none}
+.efm .sub:not(.contact) a,.efm .sub .l2 > button{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:11px 14px;border-radius:10px;font-size:14.5px;line-height:1.35;color:rgba(255,253,246,.82);text-align:left;transition:background .2s,color .2s}
+.efm .sub:not(.contact) a:hover,.efm .sub .l2:hover > button,.efm .sub .l2:focus-within > button{background:rgba(101,232,204,.09);color:var(--t)}
+.efm .sub a.cur{color:var(--teal)}
+.efm .sub .cols{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px}
+.efm .sub .cap{display:block;padding:10px 14px 6px;font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--m)}
+.efm .sub.wide{min-width:560px}
+.efm .soon{display:none!important}
+.efm.show-soon .soon{display:flex!important}
+.efm.show-soon .it.soon::after{display:none}
+.efm.show-soon .soon::after{content:"скоро";font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(205,166,79,.45);padding:1px 6px;border-radius:6px;margin-left:auto}
+/* 3-й уровень */
+.efm .l2{position:relative}
+.efm .l2 > button::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg)}
+.efm .sub3{position:absolute;left:calc(100% + 8px);top:-8px;min-width:260px;padding:8px;border-radius:16px;background:var(--panel);border:1px solid var(--line);box-shadow:0 24px 50px -16px rgba(0,0,0,.7);opacity:0;visibility:hidden;transform:translateX(-6px);transition:opacity .2s,transform .2s,visibility .2s}
+.efm .sub3::before{content:"";position:absolute;top:0;bottom:0;left:-12px;width:12px}
+.efm .l2:hover > .sub3,.efm .l2:focus-within > .sub3,.efm .l2.open > .sub3{opacity:1;visibility:visible;transform:none}
+
+/* панель контактов с формой */
+.efm .contact{left:auto;right:0;width:380px;padding:26px}
+.efm .contact .info h4{font-size:13px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--t);margin-bottom:18px}
+.efm .contact .big{display:block;font-size:22px;font-weight:700;color:var(--t);margin-bottom:4px;transition:color .2s}
+.efm .contact .big:hover{color:var(--teal)}
+.efm .contact .small{display:block;font-size:15px;color:rgba(255,253,246,.75);margin-bottom:18px}
+.efm .contact .small:hover{color:var(--t)}
+.efm .msg{display:flex;gap:8px;margin:4px 0 22px}
+.efm .msg a{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:44px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-weight:600;transition:border-color .2s,background .2s}
+.efm .msg a:hover{border-color:rgba(101,232,204,.5);background:rgba(101,232,204,.07)}
+.efm .msg img{width:18px;height:18px}
+.efm .contact .soc img{width:20px;height:20px}
+.efm .contact .soc a{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:rgba(255,253,246,.05)}
+.efm .contact .note{margin-top:18px;font-size:13px;line-height:1.5;color:var(--m)}
+
+/* форма */
+
+/* бургер */
+.efm .burger{display:none;width:44px;height:44px;position:relative}
+.efm .burger span,.efm .burger::before,.efm .burger::after{content:"";position:absolute;left:10px;right:10px;height:2px;border-radius:2px;background:var(--t);transition:transform .3s,opacity .3s}
+.efm .burger::before{top:14px}.efm .burger span{top:21px}.efm .burger::after{top:28px}
+.efm.mopen .burger::before{transform:translateY(7px) rotate(45deg)}
+.efm.mopen .burger span{opacity:0}
+.efm.mopen .burger::after{transform:translateY(-7px) rotate(-45deg)}
+
+@media (max-width:1279px){
+  .efm .top{display:none}
+  .efm .row{height:68px}
+  .efm .logo img{height:34px}
+  .efm .burger{display:block}
+  .efm nav{position:fixed;left:0;right:0;top:68px;bottom:0;display:block;padding:8px 20px 40px;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s,transform .25s,visibility .25s}
+  .efm.mopen nav{opacity:1;visibility:visible;transform:none}
+  .efm .it{border-bottom:1px solid rgba(255,253,246,.07)}
+  .efm .it > a,.efm .it > button{width:100%;height:58px;padding:0 2px;justify-content:space-between;font-size:18px;color:var(--t);border-radius:0;background:none!important}
+  .efm .it.cur > a::before,.efm .it.cur > button::before{display:none}
+  .efm .it.cur > a,.efm .it.cur > button{color:var(--teal)}
+  .efm .sub,.efm .sub3{position:static;min-width:0!important;width:auto;opacity:1;visibility:inherit;transform:none;box-shadow:none;border:0;background:none;padding:0 0 0 12px;display:none;border-radius:0}
+  .efm .sub::before,.efm .sub3::before{display:none}
+  .efm .it.open > .sub{display:block;padding-bottom:12px}
+  .efm .it:not(.open) > .sub{display:none!important}
+  .efm .l2.open > .sub3{display:block}
+  .efm .l2:hover > .sub3{display:none}.efm .l2.open:hover > .sub3{display:block}
+  .efm .sub .cols{grid-template-columns:1fr}
+  .efm .sub:not(.contact) a,.efm .sub .l2 > button{padding:11px 10px;font-size:16px;color:rgba(255,253,246,.78)}
+  .efm .l2.open > button::after{transform:rotate(45deg)}
+  .efm .contact{display:block;padding:6px 2px 18px}
+  .efm .contact .info{margin-bottom:26px}
+}
+@media (max-width:480px){.efm .wrap{padding:0 16px}.efm nav{padding:6px 16px 40px}}
+@media (prefers-reduced-motion:reduce){.efm,.efm *{transition:none!important;animation:none!important}}
+</style>
+
+<div class="efm-space" id="efm-space"></div>
+<header class="efm" id="efm">
+  <div class="bar"></div>
+  <div class="top"><div class="wrap" style="display:flex;align-items:center;gap:22px;width:100%">
+    <a href="mailto:hello@efix-grp.ae">hello@efix-grp.ae</a>
+    <a href="tel:+971585278077">+971 58 527 8077</a>
+    <span class="sp"></span>
+    <a class="ask" href="#quote" data-open="contacts">Оставить заявку</a>
+    <div class="soc">
+      <a href="https://wa.me/971585278077" target="_blank" rel="noopener" aria-label="WhatsApp"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt=""></a>
+      <a href="https://t.me/efix_grp" target="_blank" rel="noopener" aria-label="Telegram"><img src="https://static.tildacdn.com/tild6136-3365-4130-a336-373630316562/telegram_1.svg" alt=""></a>
+      <a href="https://www.instagram.com/efix_grp" target="_blank" rel="noopener" aria-label="Instagram"><img src="https://static.tildacdn.com/tild3237-6338-4735-a432-623535373363/free-icon-instagram-.svg" alt=""></a>
+      <a href="https://www.facebook.com/efixgroup" target="_blank" rel="noopener" aria-label="Facebook"><img src="https://static.tildacdn.com/tild6333-6464-4563-a163-383032326463/free-icon-facebook-1.svg" alt=""></a>
+      <a href="https://www.youtube.com/@efix_grp" target="_blank" rel="noopener" aria-label="YouTube"><img src="https://static.tildacdn.com/tild3033-3237-4564-b637-366136313164/YouTube.svg" alt=""></a>
+    </div>
+    <a class="lang" href="https://efix-grp.ae/">EN</a>
+  </div></div>
+
+  <div class="wrap row">
+    <a class="logo" href="https://efix-grp.ae/ru" aria-label="EFIX GRP — на главную"><img src="https://static.tildacdn.com/tild3137-6236-4166-b065-363935663233/Group_41.svg" alt="EFIX GRP"></a>
+
+    <nav aria-label="Главное меню">
+      <div class="it"><a href="https://efix-grp.ae/ru">Главная</a></div>
+
+      <div class="it dd"><button type="button" aria-expanded="false">О нас</button>
+        <div class="sub">
+          <a class="soon" href="https://efix-grp.ae/ru/about-us">О компании</a>
+          <a class="soon" href="https://efix-grp.ae/ru/careers">Карьера</a>
+          <a href="https://efix-grp.ae/ru/publications">Блог</a>
+        </div></div>
+
+      <div class="it dd"><button type="button" aria-expanded="false">Бухгалтерия, налоги и КИК</button>
+        <div class="sub">
+          <a href="https://efix-grp.ae/ru/accounting">Бухгалтерские услуги</a>
+          <a href="https://efix-grp.ae/ru/corporate-tax-uae">Корпоративный налог в ОАЭ (CPT)</a>
+          <a href="https://efix-grp.ae/ru/tax_consulting_vat">НДС в ОАЭ (VAT)</a>
+          <a class="soon" href="https://efix-grp.ae/ru/tax-residency-certificate-uae">Сертификат налогового резидентства (TRC)</a>
+          <a class="soon" href="https://efix-grp.ae/ru/kik-uae-company">КИК и компания в ОАЭ</a>
+          <a class="soon" href="https://efix-grp.ae/ru/payroll-wps-uae">Кадровый учет, WPS и payroll</a>
+        </div></div>
+
+      <div class="it dd soon-group"><button type="button" aria-expanded="false">Аудит</button>
+        <div class="sub">
+          <a class="soon" href="https://efix-grp.ae/ru/internal-audit-services">Внутренний аудит</a>
+          <a class="soon" href="https://efix-grp.ae/ru/external-audit-services">Внешний аудит</a>
+        </div></div>
+
+      <div class="it dd"><button type="button" aria-expanded="false">Регистрация компаний, PRO</button>
+        <div class="sub wide"><div class="cols">
+          <div>
+            <span class="cap">Регистрация</span>
+            <a class="soon" href="https://efix-grp.ae/ru/company_registration_in_uae">Регистрация компании в ОАЭ</a>
+            <a href="https://efix-grp.ae/ru/company_registration_in_mainland_dubai">Регистрация на материке Дубая</a>
+            <a href="https://efix-grp.ae/ru/ajman_free_zone_business_setup">Свободная зона Ajman</a>
+            <a href="https://efix-grp.ae/company_registration_in_uae_maydan">Свободная зона Meydan</a>
+            <a class="soon" href="https://efix-grp.ae/ru/dmcc-company-setup">Свободная зона DMCC</a>
+            <a class="soon" href="https://efix-grp.ae/ru/rakez-company-setup">Свободная зона RAKEZ</a>
+          </div>
+          <div>
+            <span class="cap">PRO-услуги</span>
+            <a href="https://efix-grp.ae/applying_visa_uae">Оформление и продление визы</a>
+            <a class="soon" href="https://efix-grp.ae/bank-account-opening-uae">Открытие банковского счета</a>
+            <a href="https://efix-grp.ae/ru/company_liquidation_in_the_uae">Ликвидация компании и дерегистрация (CPT &amp; VAT)</a>
+          </div>
+        </div></div></div>
+
+      <div class="it"><a href="https://efix-grp.ae/ru/recruitment">Рекрутмент</a></div>
+
+      <div class="it dd" id="efm-contacts"><button type="button" aria-expanded="false">Контакты</button>
+        <div class="sub contact">
+          <div class="info">
+            <h4>Свяжитесь с нами</h4>
+            <a class="big" href="tel:+971585278077">+971 58 527 8077</a>
+            <a class="small" href="mailto:hello@efix-grp.ae">hello@efix-grp.ae</a>
+            <div class="msg">
+              <a href="https://wa.me/971585278077" target="_blank" rel="noopener"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt="">WhatsApp</a>
+              <a href="https://t.me/efix_grp" target="_blank" rel="noopener"><img src="https://static.tildacdn.com/tild6136-3365-4130-a336-373630316562/telegram_1.svg" alt="">Telegram</a>
+            </div>
+            <div class="soc">
+              <a href="https://www.instagram.com/efix_grp" target="_blank" rel="noopener" aria-label="Instagram"><img src="https://static.tildacdn.com/tild3237-6338-4735-a432-623535373363/free-icon-instagram-.svg" alt=""></a>
+              <a href="https://www.facebook.com/efixgroup" target="_blank" rel="noopener" aria-label="Facebook"><img src="https://static.tildacdn.com/tild6333-6464-4563-a163-383032326463/free-icon-facebook-1.svg" alt=""></a>
+              <a href="https://www.youtube.com/@efix_grp" target="_blank" rel="noopener" aria-label="YouTube"><img src="https://static.tildacdn.com/tild3033-3237-4564-b637-366136313164/YouTube.svg" alt=""></a>
+            </div>
+            <p class="note">Ответим в течение рабочего дня. Консультация бесплатная.</p>
+          </div>
+        </div></div>
+    </nav>
+
+    <button class="burger" type="button" aria-label="Меню" aria-expanded="false"><span></span></button>
+  </div>
+</header>
+
+<script>
+(function(){
+  var CFG={
+    /* через какую форму Tilda отправлять заявки: всплывающая форма «Обсудить проект» на странице-хедере */
+  };
+  var h=document.getElementById('efm');if(!h||h.dataset.init)return;h.dataset.init=1;
+  var sp=document.getElementById('efm-space'),bar=h.querySelector('.bar'),nav=h.querySelector('nav'),burger=h.querySelector('.burger');
+  var mob=function(){return innerWidth<1280;};
+
+  /* группа, где все пункты «скоро», прячется целиком */
+  h.querySelectorAll('.it.dd').forEach(function(it){var links=it.querySelectorAll('.sub a');if(links.length&&!it.querySelector('.sub a:not(.soon)'))it.classList.add('soon');});
+
+  /* высота распорки = высоте шапки */
+  function fit(){var v=h.offsetHeight;if(sp)sp.style.setProperty('--efm-h',v+'px');document.documentElement.style.scrollPaddingTop=(v+10)+'px';}
+  addEventListener('resize',fit);addEventListener('load',fit);fit();
+
+  /* текущая страница */
+  var path=location.pathname.replace(/\/$/,'')||'/';
+  h.querySelectorAll('nav a[href]').forEach(function(a){var p;try{p=new URL(a.href).pathname.replace(/\/$/,'')||'/';}catch(e){return;}
+    if(p===path&&location.hostname.indexOf('efix-grp.ae')>-1){a.classList.add('cur');var it=a.closest('.it');if(it)it.classList.add('cur');}});
+
+  /* открытие подменю: наведение на компьютере, нажатие на телефоне */
+  var tm;
+  function closeAll(except){h.querySelectorAll('.it.open,.l2.open').forEach(function(x){if(x!==except&&!(except&&x.contains(except))){x.classList.remove('open');var b=x.querySelector(':scope > button');if(b)b.setAttribute('aria-expanded','false');}});}
+  function open(it){closeAll(it);it._y=scrollY;it.classList.add('open');var b=it.querySelector(':scope > button');if(b)b.setAttribute('aria-expanded','true');var s=it.querySelector(':scope > .sub');if(s&&!mob()&&!s.classList.contains('contact')){s.style.left='';var r=s.getBoundingClientRect(),o=r.right-(document.documentElement.clientWidth-16);if(o>0)s.style.left=(-o)+'px';}}
+  h.querySelectorAll('.it.dd').forEach(function(it){
+    var b=it.querySelector(':scope > button');
+    it.addEventListener('mouseenter',function(){if(mob())return;clearTimeout(tm);open(it);});
+    it.addEventListener('mouseleave',function(){if(mob())return;tm=setTimeout(function(){if(false)return;it.classList.remove('open');b.setAttribute('aria-expanded','false');},220);});
+    b.addEventListener('click',function(){if(it.classList.contains('open')){it.classList.remove('open');b.setAttribute('aria-expanded','false');}else open(it);});
+  });
+  h.querySelectorAll('.l2 > button').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();b.parentNode.classList.toggle('open');});});
+  document.addEventListener('click',function(e){if(!h.contains(e.target))closeAll();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeAll();setMob(false);}});
+
+  /* «Оставить заявку» → панель контактов */
+  h.querySelectorAll('[data-open="contacts"]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();var q=document.getElementById('quote');if(q){setMob(false);q.scrollIntoView({behavior:'smooth'});return;}var it=document.getElementById('efm-contacts');if(mob())setMob(true);open(it);if(mob())it.scrollIntoView({block:'start'});});});
+  document.querySelectorAll('a[href="#efm-contacts"]:not(.ask)').forEach(function(a){if(h.contains(a))return;a.addEventListener('click',function(e){e.preventDefault();h.querySelector('.ask').click();});});
+
+  /* мобильное меню */
+  function setMob(on){if(!on)closeAll();h.classList.toggle('mopen',on);burger.setAttribute('aria-expanded',on?'true':'false');document.documentElement.style.overflow=on?'hidden':'';if(on)h.classList.remove('hide');}
+  burger.addEventListener('click',function(){setMob(!h.classList.contains('mopen'));});
+  nav.querySelectorAll('a[href^="http"]').forEach(function(a){a.addEventListener('click',function(){setMob(false);});});
+  addEventListener('resize',function(){if(!mob())setMob(false);});
+
+  /* прогресс и «умная» шапка: прячется при прокрутке вниз, возвращается при прокрутке вверх */
+  var lastY=scrollY,ticking=false;
+  function onScroll(){var d=document.documentElement,y=scrollY,max=d.scrollHeight-d.clientHeight;bar.style.width=(max>0?y/max*100:0)+'%';
+    h.classList.toggle('shadow',y>10);
+    var op=h.querySelector('.it.open');if(op&&!mob()&&!h.contains(document.activeElement)&&Math.abs(y-(op._y==null?(op._y=y):op._y))>220){closeAll();}
+    if(!h.classList.contains('mopen')&&!h.querySelector('.it.open')){if(y>lastY+6&&y>200)h.classList.add('hide');else if(y<lastY-6)h.classList.remove('hide');}
+    lastY=y;ticking=false;}
+  addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(onScroll);}},{passive:true});onScroll();
+
+})();
+</script>

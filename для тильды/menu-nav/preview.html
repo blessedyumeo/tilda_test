@@ -1,0 +1,1473 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EFIX — превью меню и навигации</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap"><style>body{margin:0;background:#1B1C25}</style></head><body>
+<!-- EFIX · ШАПКА САЙТА С ВЫПАДАЮЩИМ МЕНЮ, КОНТАКТАМИ И ФОРМОЙ (один блок T123 «HTML-код»)
+     Куда ставить: страница-хедер сайта (Настройки сайта → Ещё → Хедер и футер), вместо текущего Zero Block шапки.
+     Всплывающие формы Tilda (#popup:projectrus1 и др.) на странице-хедере НЕ удалять — форма из меню отправляет заявку через них,
+     поэтому заявки приходят туда же, куда и сейчас (почта / Telegram / CRM — как настроено в Tilda).
+
+     Как править меню: ниже в разметке, раздел <nav>. Каждый пункт — строка <a href="...">Название</a>.
+     Страницы, которых пока нет на сайте, помечены class="soon" — они скрыты. Когда страница опубликована — уберите class="soon".
+     Третий уровень: внутри пункта добавьте <div class="sub3">…ссылки…</div> (пример — в инструкции).
+     В редакторе Tilda блок выглядит серым прямоугольником — смотрите в «Предпросмотре». -->
+<style>
+.efm-space{height:var(--efm-h,112px)}
+.efm{--t:#FFFDF6;--m:#8B8C88;--gold:#CDA64F;--teal:#65E8CC;--bg:#181922;--panel:#23252E;--line:#38393C;--in:#22252E;
+  position:fixed;top:0;left:0;right:0;z-index:9990;font-family:Manrope,Arial,sans-serif;color:var(--t);background:var(--bg);border-bottom:1px solid rgba(255,253,246,.06);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .3s;-webkit-font-smoothing:antialiased}
+.efm.hide{transform:translateY(-100%)}
+.efm.shadow{box-shadow:0 12px 30px -18px rgba(0,0,0,.7)}
+.efm *{box-sizing:border-box;margin:0;padding:0}
+.efm a{color:inherit;text-decoration:none}
+.efm button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.efm .bar{position:absolute;left:0;top:0;height:3px;width:0;background:linear-gradient(90deg,var(--gold),#E9C77C);z-index:2;transition:width .1s linear}
+.efm .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+
+/* верхняя строка */
+.efm .top{display:flex;align-items:center;gap:22px;height:36px;font-size:13px;color:var(--m);border-bottom:1px solid rgba(255,253,246,.05)}
+.efm .top a{transition:color .2s}
+.efm .top a:hover{color:var(--t)}
+.efm .top .sp{flex:1}
+.efm .soc{display:flex;gap:12px;align-items:center}
+.efm .soc img{width:16px;height:16px;opacity:.7;transition:opacity .2s,transform .2s}
+.efm .soc a:hover img{opacity:1;transform:translateY(-1px)}
+.efm .lang{padding:2px 9px;border:1px solid rgba(255,253,246,.2);border-radius:8px;font-weight:600}
+.efm .ask{color:var(--gold)!important;font-weight:600;display:flex;align-items:center;gap:6px}
+.efm .ask::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(205,166,79,.18)}
+
+/* основная строка */
+.efm .row{display:flex;align-items:center;justify-content:space-between;gap:20px;height:76px}
+.efm .logo img{height:40px;width:auto;display:block}
+.efm nav{display:flex;align-items:center;gap:2px}
+.efm .it{position:relative}
+.efm .it > a,.efm .it > button{position:relative;display:flex;align-items:center;gap:6px;height:44px;padding:0 11px;border-radius:10px;font-size:15px;font-weight:500;color:var(--m);white-space:nowrap;transition:color .2s,background .2s}
+.efm .it:hover > a,.efm .it:hover > button,.efm .it:focus-within > a,.efm .it:focus-within > button,.efm .it.open > a,.efm .it.open > button{color:var(--t);background:rgba(255,253,246,.05)}
+.efm .it.cur > a,.efm .it.cur > button{color:var(--t)}
+.efm .it.cur > a::before,.efm .it.cur > button::before{content:"";position:absolute;left:11px;right:11px;bottom:5px;height:2px;border-radius:2px;background:var(--teal)}
+.efm .dd > a::after,.efm .dd > button::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);margin-left:2px;transition:transform .25s}
+.efm .dd.open > a::after,.efm .dd.open > button::after{transform:rotate(-135deg) translateY(-1px)}
+
+/* выпадающее меню */
+.efm .sub{position:absolute;top:calc(100% + 6px);left:0;min-width:300px;padding:8px;border-radius:16px;background:var(--panel);border:1px solid var(--line);box-shadow:0 24px 50px -16px rgba(0,0,0,.7);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s,transform .2s,visibility .2s}
+.efm .sub::before{content:"";position:absolute;left:0;right:0;top:-12px;height:12px}
+.efm .it.open > .sub{opacity:1;visibility:visible;transform:none}
+.efm .sub:not(.contact) a,.efm .sub .l2 > button{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:11px 14px;border-radius:10px;font-size:14.5px;line-height:1.35;color:rgba(255,253,246,.82);text-align:left;transition:background .2s,color .2s}
+.efm .sub:not(.contact) a:hover,.efm .sub .l2:hover > button,.efm .sub .l2:focus-within > button{background:rgba(101,232,204,.09);color:var(--t)}
+.efm .sub a.cur{color:var(--teal)}
+.efm .sub .cols{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px}
+.efm .sub .cap{display:block;padding:10px 14px 6px;font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--m)}
+.efm .sub.wide{min-width:560px}
+.efm .soon{display:none!important}
+.efm.show-soon .soon{display:flex!important}
+.efm.show-soon .it.soon::after{display:none}
+.efm.show-soon .soon::after{content:"скоро";font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(205,166,79,.45);padding:1px 6px;border-radius:6px;margin-left:auto}
+/* 3-й уровень */
+.efm .l2{position:relative}
+.efm .l2 > button::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg)}
+.efm .sub3{position:absolute;left:calc(100% + 8px);top:-8px;min-width:260px;padding:8px;border-radius:16px;background:var(--panel);border:1px solid var(--line);box-shadow:0 24px 50px -16px rgba(0,0,0,.7);opacity:0;visibility:hidden;transform:translateX(-6px);transition:opacity .2s,transform .2s,visibility .2s}
+.efm .sub3::before{content:"";position:absolute;top:0;bottom:0;left:-12px;width:12px}
+.efm .l2:hover > .sub3,.efm .l2:focus-within > .sub3,.efm .l2.open > .sub3{opacity:1;visibility:visible;transform:none}
+
+/* панель контактов с формой */
+.efm .contact{left:auto;right:0;width:760px;padding:28px;display:grid;grid-template-columns:.9fr 1.1fr;gap:28px}
+.efm .contact .info h4,.efm .form h4{font-size:13px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--t);margin-bottom:18px}
+.efm .contact .big{display:block;font-size:22px;font-weight:700;color:var(--t);margin-bottom:4px;transition:color .2s}
+.efm .contact .big:hover{color:var(--teal)}
+.efm .contact .small{display:block;font-size:15px;color:rgba(255,253,246,.75);margin-bottom:18px}
+.efm .contact .small:hover{color:var(--t)}
+.efm .msg{display:flex;gap:8px;margin:4px 0 22px}
+.efm .msg a{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:44px;border-radius:10px;border:1px solid var(--line);font-size:14px;font-weight:600;transition:border-color .2s,background .2s}
+.efm .msg a:hover{border-color:rgba(101,232,204,.5);background:rgba(101,232,204,.07)}
+.efm .msg img{width:18px;height:18px}
+.efm .contact .soc img{width:20px;height:20px}
+.efm .contact .soc a{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:rgba(255,253,246,.05)}
+.efm .contact .note{margin-top:18px;font-size:13px;line-height:1.5;color:var(--m)}
+
+/* форма */
+.efm .form{position:relative}
+.efm .fld{position:relative;margin-bottom:12px}
+.efm .fld input{width:100%;height:52px;padding:0 18px;border-radius:8px;border:1px solid var(--line);background:var(--in);color:var(--t);font:500 16px Manrope,Arial,sans-serif;outline:none;transition:border-color .2s,box-shadow .2s}
+.efm .fld input::placeholder{color:#6E7078}
+.efm .fld input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(205,166,79,.15)}
+.efm .fld.err input{border-color:#F95D51}
+.efm .fld .e{display:none;margin-top:5px;font-size:12.5px;color:#FF8C82}
+.efm .fld.err .e{display:block}
+.efm .phone{display:flex;align-items:center;height:52px;border-radius:8px;border:1px solid var(--line);background:var(--in);transition:border-color .2s,box-shadow .2s}
+.efm .phone:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(205,166,79,.15)}
+.efm .fld.err .phone{border-color:#F95D51}
+.efm .phone input{border:0!important;box-shadow:none!important;background:transparent;height:50px;padding-left:6px}
+.efm .cc{position:relative;flex:none}
+.efm .cc > button{display:flex;align-items:center;gap:7px;height:50px;padding:0 6px 0 16px;font-size:16px;color:#C9C9C4}
+.efm .cc > button img{width:22px;height:15px;border-radius:2px;object-fit:cover;background:#3a3c46}
+.efm .cc > button i{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #8B8C88}
+.efm .cc ul{position:absolute;top:calc(100% + 6px);left:0;z-index:5;width:280px;max-height:260px;overflow:auto;list-style:none;padding:6px;border-radius:12px;background:#2A2C36;border:1px solid var(--line);box-shadow:0 20px 40px -12px rgba(0,0,0,.7);display:none;scrollbar-width:thin}
+.efm .cc.open ul{display:block}
+.efm .cc li{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:14px;cursor:pointer;color:rgba(255,253,246,.85)}
+.efm .cc li:hover,.efm .cc li.on{background:rgba(101,232,204,.1)}
+.efm .cc li img{width:22px;height:15px;border-radius:2px;object-fit:cover;background:#3a3c46}
+.efm .cc li b{margin-left:auto;font-weight:500;color:var(--m)}
+.efm .send{position:relative;overflow:hidden;display:block;width:100%;height:54px;margin-top:6px;border-radius:8px;background:var(--t)!important;color:#111!important;font:700 17px Manrope,Arial,sans-serif!important;box-shadow:0 10px 24px -12px rgba(0,0,0,.7);transition:transform .2s,opacity .2s}
+.efm .send:hover{transform:translateY(-1px)}
+.efm .send[disabled]{opacity:.65;cursor:default;transform:none}
+.efm .send.load::after{content:"";position:absolute;right:18px;top:50%;width:18px;height:18px;margin-top:-9px;border:2px solid rgba(0,0,0,.2);border-top-color:#111;border-radius:50%;animation:efmSpin .8s linear infinite}
+@keyframes efmSpin{to{transform:rotate(360deg)}}
+.efm .pol{margin-top:14px;font-size:13px;line-height:1.5;color:var(--m);text-align:center}
+.efm .pol a{color:rgba(255,253,246,.8);border-bottom:1px solid rgba(255,253,246,.4)}
+.efm .done{display:none;text-align:center;padding:30px 10px}
+.efm .done b{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 16px;border-radius:50%;background:rgba(101,232,204,.12);border:1px solid rgba(101,232,204,.5)}
+.efm .done b::after{content:"";width:12px;height:22px;border-right:3px solid var(--teal);border-bottom:3px solid var(--teal);transform:rotate(45deg) translate(-2px,-3px)}
+.efm .done h5{font-size:20px;margin-bottom:8px}
+.efm .done p{font-size:14.5px;line-height:1.55;color:rgba(255,253,246,.75)}
+.efm .form.ok form{display:none}
+.efm .form.ok .done{display:block}
+.efm .fail{display:none;margin-top:12px;padding:12px 14px;border-radius:10px;background:rgba(249,93,81,.1);border:1px solid rgba(249,93,81,.4);font-size:13.5px;line-height:1.5}
+.efm .fail a{color:var(--teal)}
+.efm .form.bad .fail{display:block}
+
+/* бургер */
+.efm .burger{display:none;width:44px;height:44px;position:relative}
+.efm .burger span,.efm .burger::before,.efm .burger::after{content:"";position:absolute;left:10px;right:10px;height:2px;border-radius:2px;background:var(--t);transition:transform .3s,opacity .3s}
+.efm .burger::before{top:14px}.efm .burger span{top:21px}.efm .burger::after{top:28px}
+.efm.mopen .burger::before{transform:translateY(7px) rotate(45deg)}
+.efm.mopen .burger span{opacity:0}
+.efm.mopen .burger::after{transform:translateY(-7px) rotate(-45deg)}
+
+@media (max-width:1279px){
+  .efm .top{display:none}
+  .efm .row{height:68px}
+  .efm .logo img{height:34px}
+  .efm .burger{display:block}
+  .efm nav{position:fixed;left:0;right:0;top:68px;bottom:0;display:block;padding:8px 20px 40px;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s,transform .25s,visibility .25s}
+  .efm.mopen nav{opacity:1;visibility:visible;transform:none}
+  .efm .it{border-bottom:1px solid rgba(255,253,246,.07)}
+  .efm .it > a,.efm .it > button{width:100%;height:58px;padding:0 2px;justify-content:space-between;font-size:18px;color:var(--t);border-radius:0;background:none!important}
+  .efm .it.cur > a::before,.efm .it.cur > button::before{display:none}
+  .efm .it.cur > a,.efm .it.cur > button{color:var(--teal)}
+  .efm .sub,.efm .sub3{position:static;min-width:0!important;width:auto;opacity:1;visibility:inherit;transform:none;box-shadow:none;border:0;background:none;padding:0 0 0 12px;display:none;border-radius:0}
+  .efm .sub::before,.efm .sub3::before{display:none}
+  .efm .it.open > .sub{display:block;padding-bottom:12px}
+  .efm .it:not(.open) > .sub{display:none!important}
+  .efm .l2.open > .sub3{display:block}
+  .efm .l2:hover > .sub3{display:none}.efm .l2.open:hover > .sub3{display:block}
+  .efm .sub .cols{grid-template-columns:1fr}
+  .efm .sub:not(.contact) a,.efm .sub .l2 > button{padding:11px 10px;font-size:16px;color:rgba(255,253,246,.78)}
+  .efm .l2.open > button::after{transform:rotate(45deg)}
+  .efm .contact{display:block;padding:6px 2px 18px}
+  .efm .contact .info{margin-bottom:26px}
+  .efm .cc ul{width:min(300px,calc(100vw - 60px))}
+}
+@media (max-width:480px){.efm .wrap{padding:0 16px}.efm nav{padding:6px 16px 40px}}
+@media (prefers-reduced-motion:reduce){.efm,.efm *{transition:none!important;animation:none!important}}
+</style>
+
+<div class="efm-space" id="efm-space"></div>
+<header class="efm show-soon" id="efm">
+  <div class="bar"></div>
+  <div class="top"><div class="wrap" style="display:flex;align-items:center;gap:22px;width:100%">
+    <a href="mailto:hello@efix-grp.ae">hello@efix-grp.ae</a>
+    <a href="tel:+971585278077">+971 58 527 8077</a>
+    <span class="sp"></span>
+    <a class="ask" href="#efm-contacts" data-open="contacts">Оставить заявку</a>
+    <div class="soc">
+      <a href="https://wa.me/971585278077" target="_blank" rel="noopener" aria-label="WhatsApp"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt=""></a>
+      <a href="https://t.me/efix_grp" target="_blank" rel="noopener" aria-label="Telegram"><img src="https://static.tildacdn.com/tild6136-3365-4130-a336-373630316562/telegram_1.svg" alt=""></a>
+      <a href="https://www.instagram.com/efix_grp" target="_blank" rel="noopener" aria-label="Instagram"><img src="https://static.tildacdn.com/tild3237-6338-4735-a432-623535373363/free-icon-instagram-.svg" alt=""></a>
+      <a href="https://www.facebook.com/efixgroup" target="_blank" rel="noopener" aria-label="Facebook"><img src="https://static.tildacdn.com/tild6333-6464-4563-a163-383032326463/free-icon-facebook-1.svg" alt=""></a>
+      <a href="https://www.youtube.com/@efix_grp" target="_blank" rel="noopener" aria-label="YouTube"><img src="https://static.tildacdn.com/tild3033-3237-4564-b637-366136313164/YouTube.svg" alt=""></a>
+    </div>
+    <a class="lang" href="https://efix-grp.ae/">EN</a>
+  </div></div>
+
+  <div class="wrap row">
+    <a class="logo" href="https://efix-grp.ae/ru" aria-label="EFIX GRP — на главную"><img src="https://static.tildacdn.com/tild3137-6236-4166-b065-363935663233/Group_41.svg" alt="EFIX GRP"></a>
+
+    <nav aria-label="Главное меню">
+      <div class="it"><a href="https://efix-grp.ae/ru">Главная</a></div>
+
+      <div class="it dd"><button type="button" aria-expanded="false">О нас</button>
+        <div class="sub">
+          <a class="soon" href="https://efix-grp.ae/ru/about-us">О компании</a>
+          <a class="soon" href="https://efix-grp.ae/ru/careers">Карьера</a>
+          <a href="https://efix-grp.ae/ru/publications">Блог</a>
+        </div></div>
+
+      <div class="it dd"><button type="button" aria-expanded="false">Бухгалтерия, налоги и КИК</button>
+        <div class="sub">
+          <a href="https://efix-grp.ae/ru/accounting">Бухгалтерские услуги</a>
+          <a href="https://efix-grp.ae/ru/corporate-tax-uae">Корпоративный налог в ОАЭ (CPT)</a>
+          <a href="https://efix-grp.ae/ru/tax_consulting_vat">НДС в ОАЭ (VAT)</a>
+          <a class="soon" href="https://efix-grp.ae/ru/tax-residency-certificate-uae">Сертификат налогового резидентства (TRC)</a>
+          <a class="soon" href="https://efix-grp.ae/ru/kik-uae-company">КИК и компания в ОАЭ</a>
+          <a class="soon" href="https://efix-grp.ae/ru/payroll-wps-uae">Кадровый учет, WPS и payroll</a>
+        </div></div>
+
+      <div class="it dd soon-group"><button type="button" aria-expanded="false">Аудит</button>
+        <div class="sub">
+          <a class="soon" href="https://efix-grp.ae/ru/internal-audit-services">Внутренний аудит</a>
+          <a class="soon" href="https://efix-grp.ae/ru/external-audit-services">Внешний аудит</a>
+        </div></div>
+
+      <div class="it dd"><button type="button" aria-expanded="false">Регистрация компаний, PRO</button>
+        <div class="sub wide"><div class="cols">
+          <div>
+            <span class="cap">Регистрация</span>
+            <a class="soon" href="https://efix-grp.ae/ru/company_registration_in_uae">Регистрация компании в ОАЭ</a>
+            <a href="https://efix-grp.ae/ru/company_registration_in_mainland_dubai">Регистрация на материке Дубая</a>
+            <a href="https://efix-grp.ae/ru/ajman_free_zone_business_setup">Свободная зона Ajman</a>
+            <a href="https://efix-grp.ae/company_registration_in_uae_maydan">Свободная зона Meydan</a>
+            <a class="soon" href="https://efix-grp.ae/ru/dmcc-company-setup">Свободная зона DMCC</a>
+            <a class="soon" href="https://efix-grp.ae/ru/rakez-company-setup">Свободная зона RAKEZ</a>
+          </div>
+          <div>
+            <span class="cap">PRO-услуги</span>
+            <a href="https://efix-grp.ae/applying_visa_uae">Оформление и продление визы</a>
+            <a class="soon" href="https://efix-grp.ae/bank-account-opening-uae">Открытие банковского счета</a>
+            <a href="https://efix-grp.ae/ru/company_liquidation_in_the_uae">Ликвидация компании и дерегистрация (CPT &amp; VAT)</a>
+          </div>
+        </div></div></div>
+
+      <div class="it"><a href="https://efix-grp.ae/ru/recruitment">Рекрутмент</a></div>
+
+      <div class="it dd" id="efm-contacts"><button type="button" aria-expanded="false">Контакты</button>
+        <div class="sub contact">
+          <div class="info">
+            <h4>Свяжитесь с нами</h4>
+            <a class="big" href="tel:+971585278077">+971 58 527 8077</a>
+            <a class="small" href="mailto:hello@efix-grp.ae">hello@efix-grp.ae</a>
+            <div class="msg">
+              <a href="https://wa.me/971585278077" target="_blank" rel="noopener"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt="">WhatsApp</a>
+              <a href="https://t.me/efix_grp" target="_blank" rel="noopener"><img src="https://static.tildacdn.com/tild6136-3365-4130-a336-373630316562/telegram_1.svg" alt="">Telegram</a>
+            </div>
+            <div class="soc">
+              <a href="https://www.instagram.com/efix_grp" target="_blank" rel="noopener" aria-label="Instagram"><img src="https://static.tildacdn.com/tild3237-6338-4735-a432-623535373363/free-icon-instagram-.svg" alt=""></a>
+              <a href="https://www.facebook.com/efixgroup" target="_blank" rel="noopener" aria-label="Facebook"><img src="https://static.tildacdn.com/tild6333-6464-4563-a163-383032326463/free-icon-facebook-1.svg" alt=""></a>
+              <a href="https://www.youtube.com/@efix_grp" target="_blank" rel="noopener" aria-label="YouTube"><img src="https://static.tildacdn.com/tild3033-3237-4564-b637-366136313164/YouTube.svg" alt=""></a>
+            </div>
+            <p class="note">Ответим в течение рабочего дня. Консультация бесплатная.</p>
+          </div>
+
+          <div class="form">
+            <h4>Оставить заявку</h4>
+            <form novalidate>
+              <div class="fld"><input name="name" type="text" placeholder="Имя" autocomplete="name"><span class="e">Укажите имя</span></div>
+              <div class="fld"><div class="phone">
+                  <div class="cc"><button type="button" aria-label="Код страны"><img alt=""><span class="code">+971</span><i></i></button><ul role="listbox"></ul></div>
+                  <input name="phone" type="tel" inputmode="tel" placeholder="50 123 4567" autocomplete="tel-national">
+                </div><span class="e">Проверьте номер телефона</span></div>
+              <div class="fld"><input name="email" type="email" placeholder="email" autocomplete="email"><span class="e">Проверьте email</span></div>
+              <button class="send" type="submit">Получить консультацию</button>
+              <p class="pol">Нажимая на кнопку, я соглашаюсь с <a href="https://efix-grp.ae/ru/policy" target="_blank">политикой конфиденциальности</a></p>
+              <div class="fail">Не получилось отправить заявку. Напишите нам в <a href="https://wa.me/971585278077" target="_blank" rel="noopener">WhatsApp</a> или позвоните — ответим сразу.</div>
+            </form>
+            <div class="done"><b></b><h5>Заявка отправлена</h5><p>Спасибо! Менеджер свяжется с вами в ближайшее время.</p></div>
+          </div>
+        </div></div>
+    </nav>
+
+    <button class="burger" type="button" aria-label="Меню" aria-expanded="false"><span></span></button>
+  </div>
+</header>
+
+<script>
+(function(){
+  var CFG={
+    /* через какую форму Tilda отправлять заявки: всплывающая форма «Обсудить проект» на странице-хедере */
+    tildaPopup:['#popup:projectrus1','#popup:projectrus','#popup:projectrus2'],
+    flags:'https://flagcdn.com/w40/'
+  };
+  var h=document.getElementById('efm');if(!h||h.dataset.init)return;h.dataset.init=1;
+  var sp=document.getElementById('efm-space'),bar=h.querySelector('.bar'),nav=h.querySelector('nav'),burger=h.querySelector('.burger');
+  var mob=function(){return innerWidth<1280;};
+
+  /* группа, где все пункты «скоро», прячется целиком */
+  h.querySelectorAll('.it.dd').forEach(function(it){var links=it.querySelectorAll('.sub a');if(links.length&&!it.querySelector('.sub a:not(.soon)'))it.classList.add('soon');});
+
+  /* высота распорки = высоте шапки */
+  function fit(){var v=h.offsetHeight;if(sp)sp.style.setProperty('--efm-h',v+'px');document.documentElement.style.scrollPaddingTop=(v+10)+'px';}
+  addEventListener('resize',fit);addEventListener('load',fit);fit();
+
+  /* текущая страница */
+  var path=location.pathname.replace(/\/$/,'')||'/';
+  h.querySelectorAll('nav a[href]').forEach(function(a){var p;try{p=new URL(a.href).pathname.replace(/\/$/,'')||'/';}catch(e){return;}
+    if(p===path&&location.hostname.indexOf('efix-grp.ae')>-1){a.classList.add('cur');var it=a.closest('.it');if(it)it.classList.add('cur');}});
+
+  /* открытие подменю: наведение на компьютере, нажатие на телефоне */
+  var tm;
+  function closeAll(except){h.querySelectorAll('.it.open,.l2.open').forEach(function(x){if(x!==except&&!(except&&x.contains(except))){x.classList.remove('open');var b=x.querySelector(':scope > button');if(b)b.setAttribute('aria-expanded','false');}});}
+  function open(it){closeAll(it);it._y=scrollY;it.classList.add('open');var b=it.querySelector(':scope > button');if(b)b.setAttribute('aria-expanded','true');var s=it.querySelector(':scope > .sub');if(s&&!mob()&&!s.classList.contains('contact')){s.style.left='';var r=s.getBoundingClientRect(),o=r.right-(document.documentElement.clientWidth-16);if(o>0)s.style.left=(-o)+'px';}}
+  h.querySelectorAll('.it.dd').forEach(function(it){
+    var b=it.querySelector(':scope > button');
+    it.addEventListener('mouseenter',function(){if(mob())return;clearTimeout(tm);open(it);});
+    it.addEventListener('mouseleave',function(){if(mob())return;tm=setTimeout(function(){if(it.querySelector('input:focus')||it.querySelector('.cc.open'))return;it.classList.remove('open');b.setAttribute('aria-expanded','false');},220);});
+    b.addEventListener('click',function(){if(it.classList.contains('open')){it.classList.remove('open');b.setAttribute('aria-expanded','false');}else open(it);});
+  });
+  h.querySelectorAll('.l2 > button').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();b.parentNode.classList.toggle('open');});});
+  document.addEventListener('click',function(e){if(!h.contains(e.target))closeAll();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeAll();setMob(false);}});
+
+  /* «Оставить заявку» → панель контактов */
+  h.querySelectorAll('[data-open="contacts"]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();var it=document.getElementById('efm-contacts');if(mob())setMob(true);open(it);var i=it.querySelector('input[name=name]');setTimeout(function(){i&&i.focus({preventScroll:true});},250);if(mob())it.scrollIntoView({block:'start'});});});
+  document.querySelectorAll('a[href="#efm-contacts"]:not(.ask)').forEach(function(a){if(h.contains(a))return;a.addEventListener('click',function(e){e.preventDefault();h.querySelector('.ask').click();});});
+
+  /* мобильное меню */
+  function setMob(on){if(!on)closeAll();h.classList.toggle('mopen',on);burger.setAttribute('aria-expanded',on?'true':'false');document.documentElement.style.overflow=on?'hidden':'';if(on)h.classList.remove('hide');}
+  burger.addEventListener('click',function(){setMob(!h.classList.contains('mopen'));});
+  nav.querySelectorAll('a[href^="http"]').forEach(function(a){a.addEventListener('click',function(){setMob(false);});});
+  addEventListener('resize',function(){if(!mob())setMob(false);});
+
+  /* прогресс и «умная» шапка: прячется при прокрутке вниз, возвращается при прокрутке вверх */
+  var lastY=scrollY,ticking=false;
+  function onScroll(){var d=document.documentElement,y=scrollY,max=d.scrollHeight-d.clientHeight;bar.style.width=(max>0?y/max*100:0)+'%';
+    h.classList.toggle('shadow',y>10);
+    var op=h.querySelector('.it.open');if(op&&!mob()&&!h.contains(document.activeElement)&&Math.abs(y-(op._y==null?(op._y=y):op._y))>220){closeAll();h.querySelector('.cc').classList.remove('open');}
+    if(!h.classList.contains('mopen')&&!h.querySelector('.it.open')){if(y>lastY+6&&y>200)h.classList.add('hide');else if(y<lastY-6)h.classList.remove('hide');}
+    lastY=y;ticking=false;}
+  addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(onScroll);}},{passive:true});onScroll();
+
+  /* ── форма ── */
+  var C=[['ae','ОАЭ','+971','50 123 4567'],['ru','Россия','+7','900 123-45-67'],['kz','Казахстан','+7','700 123 4567'],['uz','Узбекистан','+998','90 123 45 67'],['by','Беларусь','+375','29 123-45-67'],['ua','Украина','+380','50 123 4567'],['kg','Кыргызстан','+996','700 123 456'],['am','Армения','+374','77 123456'],['az','Азербайджан','+994','50 123 45 67'],['ge','Грузия','+995','555 12 34 56'],['tr','Турция','+90','501 234 56 78'],['sa','Саудовская Аравия','+966','50 123 4567'],['om','Оман','+968','9212 3456'],['qa','Катар','+974','3312 3456'],['kw','Кувейт','+965','500 12345'],['bh','Бахрейн','+973','3600 1234'],['in','Индия','+91','81234 56789'],['gb','Великобритания','+44','7400 123456'],['de','Германия','+49','1512 3456789'],['us','США / Канада','+1','201 555 0123'],['cy','Кипр','+357','96 123456'],['rs','Сербия','+381','60 1234567']];
+  var box=h.querySelector('.form'),f=box.querySelector('form'),I=function(n){return f.querySelector('[name='+n+']');},cc=f.querySelector('.cc'),ccBtn=cc.querySelector('button'),ul=cc.querySelector('ul'),tel=f.querySelector('[name=phone]'),cur=C[0];
+  function flag(img,code){img.src=CFG.flags+code+'.png';img.alt=code.toUpperCase();}
+  C.forEach(function(c,i){var li=document.createElement('li');li.setAttribute('role','option');li.innerHTML='<img alt=""><span></span><b></b>';flag(li.querySelector('img'),c[0]);li.querySelector('span').textContent=c[1];li.querySelector('b').textContent=c[2];if(!i)li.classList.add('on');
+    li.addEventListener('click',function(e){e.stopPropagation();cur=c;ul.querySelectorAll('li').forEach(function(x){x.classList.toggle('on',x===li);});setCC();cc.classList.remove('open');tel.focus();});ul.appendChild(li);});
+  function setCC(){flag(ccBtn.querySelector('img'),cur[0]);ccBtn.querySelector('.code').textContent=cur[2];tel.placeholder=cur[3];}
+  setCC();
+  ccBtn.addEventListener('click',function(e){e.stopPropagation();cc.classList.toggle('open');});
+  document.addEventListener('click',function(){cc.classList.remove('open');});
+  tel.addEventListener('input',function(){tel.value=tel.value.replace(/[^\d\s\-()]/g,'');});
+
+  function val(){var ok=true,d=tel.value.replace(/\D/g,''),em=I('email').value.trim();
+    [['name',I('name').value.trim().length>=2],['phone',d.length>=6&&d.length<=13],['email',/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)]].forEach(function(x){var fl=f.querySelector('[name='+x[0]+']').closest('.fld');fl.classList.toggle('err',!x[1]);if(!x[1])ok=false;});
+    return ok;}
+  f.addEventListener('input',function(e){var fl=e.target.closest('.fld');if(fl)fl.classList.remove('err');});
+
+  /* отправка через форму Tilda: заполняем её поля и нажимаем её кнопку */
+  function findTildaForm(){
+    for(var i=0;i<CFG.tildaPopup.length;i++){var hk=document.querySelector('[data-tooltip-hook="'+CFG.tildaPopup[i]+'"]');var r=hk&&hk.closest('.t-rec');var fm=r&&r.querySelector('form.t-form');if(fm)return fm;}
+    return null;}
+  function setv(el,v){if(!el)return;el.value=v;el.dispatchEvent(new Event('change',{bubbles:true}));}
+  function visible(el){return !!(el&&(el.offsetWidth||el.offsetHeight||el.getClientRects().length)&&getComputedStyle(el).display!=='none');}
+  function relay(data,cb){
+    var tf=findTildaForm();if(!tf)return cb(location.hostname.indexOf('efix-grp.ae')>-1?'noform':'preview');
+    var q=function(n){return tf.querySelector('[name="'+n+'"]')||tf.querySelector('[name="'+n.toLowerCase()+'"]');};
+    setv(q('Name'),data.name);setv(q('Email'),data.email);
+    var res=tf.querySelector('.js-phonemask-result');
+    if(res){setv(tf.querySelector('.t-input-phonemask'),data.local);setv(tf.querySelector('.js-phonemask-result-iso'),data.iso);setv(res,data.phone);}
+    else setv(q('Phone'),data.phone);
+    var fin=false;function end(s){if(fin)return;fin=true;clearInterval(t);cb(s);}
+    tf.addEventListener('tildaform:aftersuccess',function(){end('ok');},{once:true});
+    if(window.jQuery)try{jQuery(tf).one('tildaform:aftersuccess',function(){end('ok');});}catch(e){}
+    var n=0,t=setInterval(function(){n++;
+      if(tf.classList.contains('js-send-form-success')||visible(tf.querySelector('.js-successbox'))||visible(document.querySelector('.t-form-success-popup')))end('ok');
+      else if(visible(tf.querySelector('.js-errorbox-all'))||visible(document.querySelector('.js-form-popup-errorbox'))){if(n>3)end('error');}
+      else if(n>60)end('timeout');},250);
+    var btn=tf.querySelector('[type=submit]');if(btn)btn.click();else if(tf.requestSubmit)tf.requestSubmit();
+  }
+  f.addEventListener('submit',function(e){e.preventDefault();box.classList.remove('bad');if(!val())return;
+    var send=f.querySelector('.send');send.disabled=true;send.classList.add('load');
+    var local=tel.value.trim(),data={name:I('name').value.trim(),email:I('email').value.trim(),iso:cur[0],local:local,phone:cur[2]+' '+local};
+    relay(data,function(s){send.disabled=false;send.classList.remove('load');
+      if(s==='ok'||s==='preview'){box.classList.add('ok');f.reset();if(s==='preview')console.info('[EFIX] превью: на сайте заявка уйдёт через форму Tilda',data);}
+      else box.classList.add('bad');});
+  });
+})();
+</script>
+
+<!-- =====================================================================
+     EFIX GRP — ОБЩИЕ СТИЛИ И АНИМАЦИИ для страниц на коде (блок 00)
+     Куда вставлять (любой вариант):
+       А) Настройки страницы → Дополнительно → «HTML-код для вставки внутрь HEAD» (лучший вариант);
+       Б) первым блоком T123 на странице.
+     Без этого блока остальные блоки будут без оформления.
+     ===================================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+.efx{
+  --bg1:#0C2339; --bg2:#1B1C25;
+  --text:#FFFDF6; --muted:#9A9B97; --muted2:#7F7F7F;
+  --teal:#65E8CC; --teal2:#4FBDB3; --sky:#95D4ED; --sky-btn:#D1F0FC; --gold:#CDA64F;
+  --card:rgba(255,255,255,.045); --card2:#282932; --line:rgba(255,253,246,.12); --line2:#464858;
+  --r-xl:40px; --r-l:32px; --r-m:20px; --r-s:12px;
+  position:relative; font-family:Manrope,Arial,sans-serif; color:var(--text); line-height:1.55; font-size:16px;
+  -webkit-font-smoothing:antialiased; text-align:left; background:var(--bg2); overflow:hidden;
+}
+.efx *,.efx *::before,.efx *::after{box-sizing:border-box;margin:0;padding:0}
+.efx a{color:inherit}
+.efx img{max-width:100%;display:block}
+.efx .wrap{position:relative;z-index:2;max-width:1160px;margin:0 auto;padding:0 20px}
+.efx .sec{padding:64px 0}
+.efx h1,.efx h2,.efx h3{font-family:Manrope,Arial,sans-serif;color:var(--text);letter-spacing:-.01em}
+.efx h2{font-size:40px;line-height:1.25;font-weight:700;margin-bottom:28px}
+.efx h3{font-size:22px;line-height:1.35;font-weight:700;margin-bottom:12px}
+.efx p{color:rgba(255,253,246,.76)}
+.efx p + p{margin-top:12px}
+.efx b,.efx strong{color:var(--text);font-weight:700}
+.efx .lead{font-size:18px;max-width:820px}
+.efx .note{font-size:14px;color:var(--muted);margin-top:18px;max-width:900px}
+.efx .center{text-align:center}
+.efx .center .lead,.efx .center .note{margin-left:auto;margin-right:auto}
+
+/* ---------- акценты в тексте ---------- */
+.efx .hl{color:var(--teal)}
+.efx .hl-sky{color:var(--sky)}
+.efx .mark{color:var(--text);font-weight:700;background:linear-gradient(transparent 62%,rgba(101,232,204,.28) 62%);padding:0 2px}
+.efx .key{display:inline-block;padding:1px 10px;border-radius:8px;background:rgba(101,232,204,.12);border:1px solid rgba(101,232,204,.35);color:var(--teal);font-weight:700;white-space:nowrap}
+.efx .key.warn{background:rgba(205,166,79,.12);border-color:rgba(205,166,79,.4);color:#E9C77C}
+
+/* ---------- плашки, кнопки ---------- */
+.efx .pill{display:inline-block;padding:5px 12px;border-radius:var(--r-s);font-size:14px;font-weight:700;color:#12131a;background:var(--teal);white-space:nowrap;line-height:1.5}
+.efx .pill.sky{background:var(--sky)}
+.efx .pill.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.efx .btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:14px 28px;border-radius:var(--r-s);background:var(--sky-btn);color:#181922;font-weight:600;font-size:16px;text-decoration:none;transition:transform .2s,box-shadow .2s,background .2s;cursor:pointer;border:0}
+.efx .btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.65),transparent);transform:skewX(-20deg);animation:efx-shine 5s ease-in-out infinite}
+.efx .btn:hover{background:#fff;transform:translateY(-2px);box-shadow:0 10px 30px -10px rgba(149,212,237,.6)}
+.efx .btn.ghost{background:transparent;color:var(--text);border:1px solid rgba(255,253,246,.3)}
+.efx .btn.ghost::after{display:none}
+.efx .btn.ghost:hover{background:rgba(255,253,246,.08);box-shadow:none}
+.efx .btn .arr{font-size:18px;line-height:1;transition:transform .2s}
+.efx .btn:hover .arr{transform:translateX(4px)}
+.efx .cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px 24px;margin-top:32px}
+.efx .cta-row small{color:var(--muted);font-size:14px;max-width:460px}
+.efx .center .cta-row{justify-content:center}
+@keyframes efx-shine{0%,70%{left:-60%}100%{left:130%}}
+
+/* ---------- заставка раздела: свечение + 3D-иконка + подпись в скобках ---------- */
+.efx .intro{position:relative;padding:96px 0 40px;text-align:center}
+.efx .intro .glow,.efx .hero .glow{position:absolute;left:50%;bottom:-18%;width:min(1200px,140%);height:125%;transform:translateX(-50%);background:radial-gradient(50% 50% at 50% 60%,rgba(79,189,179,.6) 0%,rgba(52,130,140,.3) 36%,rgba(40,70,90,.1) 60%,rgba(27,28,37,0) 80%);-webkit-mask-image:linear-gradient(180deg,#000 55%,transparent 100%);mask-image:linear-gradient(180deg,#000 55%,transparent 100%);pointer-events:none;z-index:0;animation:efx-breathe 9s ease-in-out infinite}
+.efx .intro .glow.sky{background:radial-gradient(50% 50% at 50% 60%,rgba(149,212,237,.42) 0%,rgba(80,120,201,.24) 38%,rgba(50,70,120,.08) 60%,rgba(27,28,37,0) 80%)}
+.efx .intro .wrap{z-index:2}
+.efx .icon3d{width:170px;height:170px;margin:0 auto 34px;display:grid;place-items:center;position:relative}
+.efx .icon3d img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 18px 30px rgba(0,0,0,.35));animation:efx-float 6s ease-in-out infinite}
+.efx .icon3d::after{content:"";position:absolute;bottom:-14px;left:22%;width:56%;height:16px;border-radius:50%;background:rgba(0,0,0,.35);filter:blur(8px);animation:efx-shadow 6s ease-in-out infinite}
+.efx .tag{display:inline-flex;align-items:center;gap:26px;font-size:18px;font-weight:700;color:var(--text);margin-bottom:22px}
+.efx .tag::before,.efx .tag::after{content:"";width:6px;height:46px;background:linear-gradient(var(--sky),var(--sky)) center/1.5px 100% no-repeat,radial-gradient(circle,var(--sky) 2.5px,transparent 3px) top/6px 6px no-repeat,radial-gradient(circle,var(--sky) 2.5px,transparent 3px) bottom/6px 6px no-repeat;opacity:.9}
+.efx .intro h2{font-size:44px;max-width:920px;margin:0 auto 18px}
+.efx .intro .lead{margin:0 auto}
+@keyframes efx-float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(-2deg)}}
+@keyframes efx-shadow{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(.8);opacity:.5}}
+@keyframes efx-breathe{0%,100%{opacity:.85;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.06)}}
+
+/* ---------- мягкий переход между разделами ---------- */
+.efx .seam{height:1px;max-width:900px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(149,212,237,.45),rgba(101,232,204,.55),rgba(149,212,237,.45),transparent);position:relative;z-index:2}
+.efx .seam::after{content:"";position:absolute;left:50%;top:-3px;width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 14px 4px rgba(101,232,204,.6);transform:translateX(-50%)}
+.efx .blob{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:0;opacity:.5}
+.efx .blob.a{width:420px;height:420px;background:rgba(12,35,57,.9);left:-140px;top:10%}
+.efx .blob.b{width:360px;height:360px;background:rgba(79,189,179,.18);right:-120px;bottom:5%}
+
+/* ---------- первый экран ---------- */
+.efx .hero{position:relative;padding:72px 0 64px;text-align:center;background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 85%)}
+.efx .hero .glow{bottom:0;height:100%;opacity:.8}
+.efx .hero .icon3d{width:190px;height:180px;margin-bottom:26px}
+.efx .hero h1{font-size:64px;line-height:1.08;font-weight:800;max-width:980px;margin:0 auto 22px}
+.efx .hero .lead{margin:0 auto;font-size:20px;font-weight:300;color:var(--text)}
+.efx .flow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin:26px auto 0}
+.efx .flow span{padding:6px 14px;border-radius:12px;font-weight:700;font-size:15px;color:var(--text)}
+.efx .flow i{font-style:normal;color:var(--muted)}
+.efx .flow .c1{background:#0A9DB1}.efx .flow .c2{background:#2E86B8}.efx .flow .c3{background:#5078C9}.efx .flow .c4{background:#6B47C6}.efx .flow .c5{background:#4A3A9A}
+.efx .price-line{display:inline-flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px 14px;margin:30px auto 0;padding:14px 22px;border:1px solid var(--line);border-radius:var(--r-m);background:rgba(27,28,37,.55);backdrop-filter:blur(6px)}
+.efx .price-line span{color:rgba(255,253,246,.8);font-size:15px}
+.efx .price-line .pill{font-size:18px;padding:6px 14px}
+.efx .results{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px;text-align:left}
+.efx .res,.efx .card,.efx .col{padding:28px;border:1px solid var(--line);border-radius:var(--r-l);background:var(--card);backdrop-filter:blur(4px);transition:transform .3s,border-color .3s,background .3s}
+.efx .res:hover,.efx .card:hover,.efx .col:hover{transform:translateY(-4px);border-color:rgba(101,232,204,.35);background:rgba(255,255,255,.06)}
+.efx .num{font-size:14px;font-weight:700;color:var(--teal);margin-bottom:12px;letter-spacing:.08em}
+.efx .res h3{font-size:19px;margin-bottom:8px}
+.efx .res p,.efx .card p{font-size:15px}
+.efx .hero .cta-row{justify-content:center;flex-direction:column;gap:14px}
+.efx .hero .cta-row small{text-align:center}
+.efx .anchors{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:34px}
+.efx .anchors a{padding:8px 16px;border:1px solid var(--line);border-radius:999px;font-size:14px;color:var(--muted);text-decoration:none;transition:color .2s,border-color .2s,background .2s}
+.efx .anchors a:hover{color:var(--text);border-color:rgba(101,232,204,.5);background:rgba(101,232,204,.08)}
+
+/* ---------- пакеты ---------- */
+.efx .packs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.efx .pack{position:relative;display:flex;flex-direction:column;padding:32px 28px 28px;border:1px solid var(--line);border-radius:var(--r-xl);background:var(--card);transition:transform .3s,box-shadow .3s,border-color .3s}
+.efx .pack:hover{transform:translateY(-6px);box-shadow:0 24px 50px -24px rgba(79,189,179,.45);border-color:rgba(101,232,204,.4)}
+.efx .pack.hit{border-color:rgba(101,232,204,.55);background:linear-gradient(180deg,rgba(101,232,204,.1),rgba(255,255,255,.03) 45%)}
+.efx .pack .badge{position:absolute;top:-13px;left:28px;padding:4px 12px;border-radius:999px;background:var(--teal);color:#12131a;font-size:12px;font-weight:700;letter-spacing:.04em}
+.efx .pack .vnum{font-size:14px;font-weight:700;color:var(--muted);letter-spacing:.08em}
+.efx .pack h3{font-size:22px;margin:10px 0 4px;min-height:2.7em}
+.efx .pack .code{font-size:14px;color:var(--sky);font-weight:600}
+.efx .pack .price{margin:22px 0 4px;font-size:36px;font-weight:800;line-height:1.1;color:var(--text)}
+.efx .pack.hit .price{color:var(--teal)}
+.efx .pack .price small{font-size:16px;font-weight:600;color:var(--muted)}
+.efx .pack .price-cap{font-size:13px;color:var(--muted);margin-bottom:22px}
+.efx .pack dl{border-top:1px solid var(--line);padding-top:18px;flex:1}
+.efx .pack dt{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.efx .pack dd{font-size:15px;color:rgba(255,253,246,.86);margin-bottom:18px}
+.efx .pack .btn{width:100%;margin-top:6px}
+
+/* ---------- выноски ---------- */
+.efx .callout{display:flex;gap:18px;align-items:flex-start;margin-top:24px;padding:22px 26px;border-radius:var(--r-m);background:rgba(149,212,237,.08);border:1px solid rgba(149,212,237,.25)}
+.efx .callout .mk{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--sky);color:#12131a;font-weight:800;font-size:17px}
+.efx .callout b{display:block;margin-bottom:4px}
+.efx .callout p{font-size:15px}
+.efx .callout.warn{background:rgba(205,166,79,.09);border-color:rgba(205,166,79,.35)}
+.efx .callout.warn .mk{background:var(--gold)}
+.efx .callout.ok{background:rgba(101,232,204,.07);border-color:rgba(101,232,204,.3)}
+.efx .callout.ok .mk{background:var(--teal)}
+
+/* ---------- две колонки ---------- */
+.efx .split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.efx .col h3{display:flex;align-items:center;gap:12px;font-size:19px;margin-bottom:18px}
+.efx .col h3 .pill{font-size:12px}
+.efx .col ul{list-style:none}
+.efx .col li{position:relative;padding:12px 0 12px 30px;border-top:1px solid var(--line);font-size:15px;color:rgba(255,253,246,.86)}
+.efx .col li:first-child{border-top:0}
+.efx .col li::before{content:"";position:absolute;left:0;top:14px;width:18px;height:18px;border-radius:6px;background:var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.2l2.3 2.3 4.7-5' fill='none' stroke='%2312131a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.efx .col.out li::before{background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 2.5v7M2.5 6h7' fill='none' stroke='%2395D4ED' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center/11px no-repeat;border:1.5px solid var(--sky)}
+
+/* ---------- таблицы ---------- */
+.efx .tbl{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:var(--r-xl);overflow:hidden;background:rgba(27,28,37,.6)}
+.efx .tbl th{background:rgba(101,232,204,.07);text-align:left;padding:20px 24px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.efx .tbl td{padding:20px 24px;border-top:1px solid var(--line);vertical-align:top;font-size:15px;color:rgba(255,253,246,.84);transition:background .2s}
+.efx .tbl td:first-child{color:var(--text);font-weight:600;font-size:16px}
+.efx .tbl tr:hover td{background:rgba(101,232,204,.04)}
+.efx .tbl .total td{background:rgba(101,232,204,.08);font-weight:800;color:var(--teal)}
+.efx .tbl.fees{max-width:640px}
+.efx .tbl.fees td:last-child,.efx .tbl.fees th:last-child{text-align:right;white-space:nowrap}
+.efx .tbl.c3 td:first-child{width:26%}
+
+/* ---------- сетки карточек ---------- */
+.efx .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.efx .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.efx .card h3{font-size:20px}
+
+/* ---------- разбивка расчёта ---------- */
+.efx .breakdown{margin-top:24px;padding:28px 30px;border-radius:var(--r-l);border:1px solid rgba(101,232,204,.35);background:rgba(101,232,204,.05)}
+.efx .breakdown b{display:block;font-size:18px;margin-bottom:6px}
+.efx .breakdown p{font-size:15px;margin-bottom:18px}
+.efx .chips{display:flex;flex-wrap:wrap;gap:10px;counter-reset:ch}
+.efx .chips span{counter-increment:ch;display:inline-flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;border-radius:999px;background:rgba(255,253,246,.06);border:1px solid var(--line);font-size:14px;font-weight:600;transition:border-color .2s,background .2s}
+.efx .chips span:hover{border-color:rgba(101,232,204,.5);background:rgba(101,232,204,.08)}
+.efx .chips span::before{content:counter(ch);display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--teal);color:#12131a;font-size:12px;font-weight:800}
+
+/* ---------- шаг за шагом ---------- */
+.efx .stepper{position:relative;max-width:980px;margin:0 auto;list-style:none;counter-reset:st}
+.efx .step{counter-increment:st;display:grid;grid-template-columns:170px 1fr;gap:14px;position:relative;margin-bottom:64px}
+.efx .step:last-child{margin-bottom:0}
+.efx .step .day{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:24px;background:var(--sky);color:#181922;min-height:170px;transition:box-shadow .4s,transform .4s}
+.efx .step .day small{font-size:14px;font-weight:600;opacity:.75}
+.efx .step .day::before{content:counter(st,decimal-leading-zero);font-size:44px;font-weight:800;line-height:1}
+.efx .step.on .day{box-shadow:0 0 0 6px rgba(149,212,237,.15),0 20px 50px -18px rgba(149,212,237,.8);transform:scale(1.02)}
+.efx .step:not(:last-child) .day::after{content:"";position:absolute;left:50%;top:calc(100% + 10px);width:1.5px;height:44px;background:linear-gradient(var(--muted),var(--muted)) top/100% 0 no-repeat;transform:translateX(-50%);transition:background-size .8s ease .3s}
+.efx .step.seen:not(:last-child) .day::after,.efx:not(.efx-anim) .step .day::after{background-size:100% 100%}
+.efx .step:not(:last-child)::after{content:"";position:absolute;left:85px;top:calc(100% + 44px);width:9px;height:9px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:translateX(-50%) rotate(45deg);opacity:0;transition:opacity .3s ease 1s}
+.efx .step.seen:not(:last-child)::after,.efx:not(.efx-anim) .step::after{opacity:1}
+.efx .step .body{padding:26px 28px;border-radius:32px;background:var(--card2);border:1px solid var(--line2)}
+.efx .step .body h3{font-size:20px;margin-bottom:16px}
+.efx .who{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid rgba(255,253,246,.08)}
+.efx .who:first-of-type{border-top:0;padding-top:0}
+.efx .who span{flex:none;min-width:48px;text-align:center;padding:4px 10px;border-radius:12px;font-weight:700;font-size:15px;color:#12131a}
+.efx .who .you{background:var(--text)}
+.efx .who .we{background:#AFADAD}
+.efx .who p{font-size:15px;padding-top:3px}
+
+/* ---------- списки, чек-листы ---------- */
+.efx .docs{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start}
+.efx .checklist{list-style:none;padding:12px 30px;border:1px solid var(--line);border-radius:var(--r-l);background:var(--card)}
+.efx .checklist li{position:relative;padding:16px 0 16px 34px;border-top:1px solid var(--line);font-size:15px;color:rgba(255,253,246,.86)}
+.efx .checklist li:first-child{border-top:0}
+.efx .checklist li::before{content:"";position:absolute;left:0;top:18px;width:20px;height:20px;border-radius:6px;background:var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.2l2.3 2.3 4.7-5' fill='none' stroke='%2312131a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+
+/* ---------- квоты, цифры ---------- */
+.efx .quota{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.efx .quota div{padding:22px 24px;border-radius:var(--r-m);border:1px solid var(--line);background:var(--card)}
+.efx .quota strong{display:block;font-size:28px;font-weight:800;color:var(--teal);line-height:1.2}
+.efx .quota span{font-size:14px;color:var(--muted)}
+
+/* ---------- FAQ ---------- */
+.efx .faq{max-width:860px;margin:0 auto}
+.efx .faq details{border:1px solid var(--line2);background:var(--card2);border-radius:var(--r-l);margin-bottom:12px;transition:border-color .3s}
+.efx .faq details[open]{border-color:rgba(101,232,204,.4)}
+.efx .faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 28px;font-size:18px;font-weight:600;color:var(--text)}
+.efx .faq summary::-webkit-details-marker{display:none}
+.efx .faq summary::after{content:"+";flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:1px solid var(--line2);font-size:20px;font-weight:400;transition:transform .3s,background .3s,color .3s}
+.efx .faq details[open] summary::after{transform:rotate(45deg);background:var(--teal);color:#12131a;border-color:var(--teal)}
+.efx .faq details p{padding:0 28px 24px;font-size:15px;animation:efx-drop .35s ease}
+@keyframes efx-drop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+/* ---------- анимации появления ---------- */
+.efx.efx-anim [data-a]{opacity:0;transition:opacity .9s ease,transform 1s cubic-bezier(.2,.65,.3,1);transition-delay:var(--dl,0s)}
+.efx.efx-anim [data-a="up"]{transform:translate3d(0,var(--dist,70px),0)}
+.efx.efx-anim [data-a="down"]{transform:translate3d(0,-26px,0)}
+.efx.efx-anim [data-a="zoom"]{transform:scale(.8)}
+.efx.efx-anim [data-a="left"]{transform:translate3d(-60px,0,0)}
+.efx.efx-anim [data-a="right"]{transform:translate3d(60px,0,0)}
+.efx.efx-anim [data-a].in{opacity:1;transform:none}
+
+/* ---------- адаптив ---------- */
+@media (max-width:1100px){.efx .grid4{grid-template-columns:1fr 1fr}}
+@media (max-width:960px){
+  .efx .hero h1{font-size:46px}
+  .efx h2,.efx .intro h2{font-size:32px}
+  .efx .packs,.efx .results{grid-template-columns:1fr}
+  .efx .packs{max-width:560px;margin:0 auto}
+  .efx .split,.efx .grid2,.efx .docs{grid-template-columns:1fr}
+  .efx .pack h3{min-height:0}
+}
+@media (max-width:720px){
+  .efx{--dist:36px}
+  .efx .sec{padding:44px 0}
+  .efx .intro{padding:64px 0 24px}
+  .efx .hero{padding:48px 0 40px}
+  .efx .hero h1{font-size:34px}
+  .efx .hero .lead{font-size:17px}
+  .efx h2,.efx .intro h2{font-size:26px;margin-bottom:18px}
+  .efx .icon3d{width:120px;height:120px;margin-bottom:24px}
+  .efx .hero .icon3d{width:130px;height:124px}
+  .efx .tag{font-size:15px;gap:16px}
+  .efx .tag::before,.efx .tag::after{height:36px}
+  .efx .res,.efx .col,.efx .card{padding:22px}
+  .efx .pack{padding:28px 22px 22px;border-radius:var(--r-l)}
+  .efx .grid4,.efx .quota{grid-template-columns:1fr}
+  .efx .btn{width:100%}
+  .efx .flow span{font-size:13px;padding:5px 10px}
+  .efx .faq summary{padding:18px 20px;font-size:16px}
+  .efx .faq details p{padding:0 20px 20px}
+  .efx .callout{padding:18px}
+  .efx .step{grid-template-columns:1fr;gap:0;margin-bottom:44px}
+  .efx .step .day{min-height:0;flex-direction:row;gap:10px;padding:14px 20px;border-radius:24px 24px 0 0;justify-content:flex-start}
+  .efx .step .day::before{font-size:28px}
+  .efx .step .day::after,.efx .step::after{display:none}
+  .efx .step .body{border-radius:0 0 24px 24px;border-top:0;padding:22px 20px}
+  /* таблицы → карточки */
+  .efx .tbl,.efx .tbl tbody,.efx .tbl tr,.efx .tbl td{display:block;width:100%!important}
+  .efx .tbl{border:0;border-radius:0;background:none;overflow:visible}
+  .efx .tbl thead{display:none}
+  .efx .tbl tr{margin-bottom:12px;border:1px solid var(--line);border-radius:24px;background:var(--card);overflow:hidden}
+  .efx .tbl td{border-top:1px solid var(--line);padding:14px 20px}
+  .efx .tbl td:first-child{border-top:0;padding-top:18px;background:rgba(101,232,204,.06)}
+  .efx .tbl td[data-l]:not(:first-child)::before{content:attr(data-l);display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .efx .tbl.fees{border:1px solid var(--line);border-radius:24px;overflow:hidden}
+  .efx .tbl.fees tr{display:flex;justify-content:space-between;align-items:center;margin-bottom:0;border-radius:0;border-width:0 0 1px;background:none}
+  .efx .tbl.fees td{border:0;width:auto!important;background:none!important;padding:14px 20px}
+  .efx .tbl.fees .total{background:rgba(101,232,204,.08)}
+}
+@media (prefers-reduced-motion:reduce){
+  .efx *,.efx *::before,.efx *::after{animation:none!important}
+  .efx.efx-anim [data-a]{opacity:1;transform:none;transition:none}
+}
+/* ================= ГЛАВНАЯ: доп. компоненты ================= */
+.efx .hero-home{position:relative;min-height:88vh;display:flex;align-items:center;padding:80px 0 90px;text-align:center;background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 90%)}
+.efx .hero-home .glow{position:absolute;left:50%;bottom:0;width:min(1300px,160%);height:100%;transform:translateX(-50%);background:radial-gradient(50% 50% at 50% 55%,rgba(79,189,179,.5) 0%,rgba(52,130,140,.26) 38%,rgba(40,70,90,.08) 62%,rgba(27,28,37,0) 80%);pointer-events:none;animation:efx-breathe 9s ease-in-out infinite}
+.efx .hero-home .wrap{width:100%}
+.efx .brand3d{position:relative;width:300px;height:300px;margin:0 auto 26px}
+.efx .brand3d .sphere{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:.9;animation:efx-rot 40s linear infinite}
+.efx .brand3d .tri{position:absolute;left:50%;top:50%;width:46%;transform:translate(-50%,-50%);filter:drop-shadow(0 20px 30px rgba(0,0,0,.45));animation:efx-float2 6s ease-in-out infinite}
+@keyframes efx-rot{to{transform:rotate(360deg)}}
+@keyframes efx-float2{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,calc(-50% - 14px))}}
+.efx .hero-home .kicker{font-size:22px;font-weight:300;color:var(--sky);letter-spacing:.02em;margin-bottom:10px}
+.efx .hero-home h1{font-size:60px;line-height:1.08;font-weight:800;max-width:960px;margin:0 auto}
+.efx .hero-home h1 small{display:block;font-size:.42em;font-weight:600;letter-spacing:.2em;color:rgba(255,253,246,.7);margin-top:14px}
+.efx .scroll-hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;color:var(--muted);text-decoration:none;z-index:2}
+.efx .scroll-hint i{width:22px;height:34px;border:1.5px solid rgba(255,253,246,.35);border-radius:12px;position:relative}
+.efx .scroll-hint i::after{content:"";position:absolute;left:50%;top:7px;width:3px;height:7px;border-radius:2px;background:var(--teal);transform:translateX(-50%);animation:efx-wheel 1.8s ease-in-out infinite}
+@keyframes efx-wheel{0%{opacity:0;transform:translate(-50%,0)}30%{opacity:1}100%{opacity:0;transform:translate(-50%,12px)}}
+.efx .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.efx .fact{position:relative;overflow:hidden;padding:30px 26px;border:1px solid var(--line);border-radius:var(--r-l);background:var(--card);min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;transition:transform .3s,border-color .3s}
+.efx .fact:hover{transform:translateY(-6px);border-color:rgba(101,232,204,.4)}
+.efx .fact .big{position:absolute;right:14px;top:4px;font-size:110px;font-weight:200;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(149,212,237,.28)}
+.efx .fact h3{font-size:22px;margin-bottom:8px}
+.efx .fact h3 .hl{font-size:1.25em}
+.efx .fact p{font-size:15px}
+.efx .why{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.efx .why-list{display:grid;gap:12px}
+.efx .why-list div{display:flex;align-items:baseline;gap:14px;padding:22px 26px;border-radius:24px;border:1px solid var(--line);background:var(--card);transition:transform .3s,border-color .3s,background .3s}
+.efx .why-list div:hover{transform:translateX(8px);border-color:rgba(101,232,204,.4);background:rgba(101,232,204,.05)}
+.efx .why-list b{font-size:24px;font-weight:800;color:var(--teal)}
+.efx .why-list span{font-size:17px;color:rgba(255,253,246,.8)}
+.efx .services{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.efx .svc{grid-column:span 2;position:relative;display:flex;flex-direction:column;padding:28px;border-radius:var(--r-l);border:1px solid var(--line);background:var(--card);text-decoration:none;transition:transform .3s,border-color .3s,box-shadow .3s}
+.efx .svc:nth-child(4),.efx .svc:nth-child(5){grid-column:span 3}
+.efx .svc:hover{transform:translateY(-6px);border-color:rgba(101,232,204,.45);box-shadow:0 26px 50px -26px rgba(79,189,179,.5)}
+.efx .svc img{width:96px;height:96px;object-fit:contain;margin-bottom:18px;transition:transform .4s}
+.efx .svc:hover img{transform:translateY(-6px) rotate(-4deg) scale(1.05)}
+.efx .svc h3{font-size:21px;margin-bottom:10px}
+.efx .svc p{font-size:15px;flex:1}
+.efx .svc .more{margin-top:18px;font-size:14px;font-weight:700;color:var(--teal)}
+.efx .svc .more::after{content:" →";transition:margin .2s}
+.efx .svc:hover .more::after{margin-left:6px}
+.efx .band{margin-top:28px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:32px 36px;border-radius:var(--r-xl);border:1px solid rgba(101,232,204,.3);background:linear-gradient(120deg,rgba(101,232,204,.1),rgba(149,212,237,.05))}
+.efx .band h3{font-size:26px;margin-bottom:4px}
+.efx .marquee{position:relative;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.efx .marquee .track{display:flex;gap:64px;width:max-content;animation:efx-marq 40s linear infinite}
+.efx .marquee:hover .track{animation-play-state:paused}
+.efx .marquee img{height:44px;width:auto;opacity:.65;filter:grayscale(1) brightness(1.4);transition:opacity .3s,filter .3s}
+.efx .marquee img:hover{opacity:1;filter:none}
+@keyframes efx-marq{to{transform:translateX(-50%)}}
+.efx .letters{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 4px 24px;scrollbar-width:thin;scrollbar-color:rgba(101,232,204,.5) transparent}
+.efx .letters button{flex:none;scroll-snap-align:start;width:210px;border:0;padding:0;background:none;cursor:zoom-in;position:relative}
+.efx .letters img{width:210px;height:296px;object-fit:cover;border-radius:16px;box-shadow:0 20px 40px -20px rgba(0,0,0,.7);transition:transform .3s}
+.efx .letters button:hover img{transform:translateY(-6px) rotate(-1deg)}
+.efx .letters button::before{content:"";position:absolute;top:-8px;left:50%;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,var(--teal) 60%,#2a8f80);transform:translateX(-50%);z-index:2;box-shadow:0 4px 8px rgba(0,0,0,.4)}
+.efx .car-nav{display:flex;gap:10px;justify-content:flex-end;margin-bottom:10px}
+.efx .car-nav button{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:18px;cursor:pointer;transition:background .2s,border-color .2s}
+.efx .car-nav button:hover{background:rgba(101,232,204,.12);border-color:rgba(101,232,204,.5)}
+.efx-lb{position:fixed;inset:0;z-index:99999;background:rgba(10,12,18,.9);display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.efx-lb.on{display:flex;animation:efx-drop .25s ease}
+.efx-lb img{max-width:min(720px,100%);max-height:92vh;border-radius:12px;box-shadow:0 30px 60px rgba(0,0,0,.6)}
+.efx .offices{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.efx .office{padding:28px 24px;border-radius:var(--r-l);border:1px solid var(--line);background:var(--card);transition:transform .3s,border-color .3s}
+.efx .office:hover{transform:translateY(-6px);border-color:rgba(101,232,204,.4)}
+.efx .office img{width:58px;height:58px;margin-bottom:16px;animation:efx-float 5s ease-in-out infinite}
+.efx .office:nth-child(2) img{animation-delay:-1.2s}.efx .office:nth-child(3) img{animation-delay:-2.4s}.efx .office:nth-child(4) img{animation-delay:-3.6s}
+.efx .office h3{font-size:22px;margin-bottom:10px}
+.efx .office p{font-size:14px}
+@media (max-width:1100px){.efx .facts,.efx .offices{grid-template-columns:1fr 1fr}.efx .services{grid-template-columns:1fr 1fr}.efx .svc,.efx .svc:nth-child(4),.efx .svc:nth-child(5){grid-column:span 1}.efx .svc:nth-child(5){grid-column:span 2}}
+@media (max-width:960px){.efx .why{grid-template-columns:1fr}.efx .hero-home h1{font-size:44px}}
+@media (max-width:720px){.efx .hero-home{min-height:0;padding:40px 0 90px}.efx .brand3d{width:210px;height:210px}.efx .hero-home h1{font-size:32px}.efx .hero-home .kicker{font-size:18px}
+.efx .facts,.efx .offices,.efx .services{grid-template-columns:1fr}.efx .why-list div{flex-direction:column;gap:2px;padding:18px 20px}.efx .why .intro{padding:10px 0!important}.efx .why .icon3d{width:150px!important;height:150px!important}.efx .fact .big{font-size:84px}.efx .svc:nth-child(5){grid-column:span 1}.efx .fact{min-height:200px}.efx .why-list b{font-size:20px}.efx .band{padding:24px 20px}.efx .marquee img{height:34px}.efx .letters button,.efx .letters img{width:170px}.efx .letters img{height:240px}}
+/* ---------- первый экран с фоновым фото ---------- */
+.efx .hero.has-photo{padding:120px 0 72px;min-height:92vh;display:flex;align-items:center}
+.efx .hero.has-photo .wrap{width:100%}
+.efx .hero-bg{position:absolute;inset:0;overflow:hidden;z-index:0}
+.efx .hero-bg{background:#0f1a28 center/cover no-repeat}
+.efx .hero-bg picture{position:absolute;inset:0}
+.efx .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 55%;transform-origin:50% 60%;transition:opacity 1.2s ease;filter:brightness(.78) saturate(.85)}
+.efx .hero-bg img.ok{animation:efx-kb 14s ease-out both}
+.efx.efx-ready .hero-bg img:not(.ok){opacity:0}
+.efx.efx-ready .icon3d img:not(.ok){opacity:0}
+.efx .icon3d img{transition:opacity .8s ease}
+.efx .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,35,57,.88) 0%,rgba(18,24,38,.62) 32%,rgba(27,28,37,.7) 60%,rgba(27,28,37,.97) 90%,#1B1C25 100%),radial-gradient(70% 55% at 50% 42%,rgba(27,28,37,.6),transparent 75%)}
+.efx .hero.has-photo .glow{opacity:.22;mix-blend-mode:screen}
+.efx .hero .loc{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;padding:7px 16px;border-radius:999px;border:1px solid rgba(255,253,246,.22);background:rgba(27,28,37,.45);backdrop-filter:blur(6px);font-size:14px;font-weight:600;letter-spacing:.04em;color:rgba(255,253,246,.9)}
+.efx .hero .loc::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px rgba(101,232,204,.25);animation:efx-pulse 2s ease-in-out infinite}
+.efx .hero.has-photo h1{text-shadow:0 4px 30px rgba(0,0,0,.45)}
+.efx .hero.has-photo .res{background:rgba(27,28,37,.6);backdrop-filter:blur(10px)}
+@keyframes efx-kb{from{transform:scale(1.14)}to{transform:scale(1.02)}}
+@keyframes efx-pulse{0%,100%{box-shadow:0 0 0 4px rgba(101,232,204,.25)}50%{box-shadow:0 0 0 8px rgba(101,232,204,.05)}}
+@media (max-width:720px){.efx .hero.has-photo{padding:72px 0 48px;min-height:0}.efx .hero-bg img{object-position:62% 55%}.efx .hero .loc{font-size:12px}}
+</style>
+
+<script>
+/* EFIX — анимации: появление при прокрутке, счётчики цифр, шаги, лёгкий параллакс иконок.
+   Работает для всех блоков .efx на странице. Если скрипт не сработает — всё просто покажется без анимаций. */
+(function(){
+  function init(){
+    var roots=document.querySelectorAll('.efx:not(.efx-ready)');
+    if(!roots.length)return;
+    var hasIO='IntersectionObserver' in window;
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    roots.forEach(function(root){
+      root.querySelectorAll('img').forEach(function(im){if(im.complete&&im.naturalWidth)im.classList.add('ok');else{im.addEventListener('load',function(){im.classList.add('ok');});im.addEventListener('error',function(){im.classList.add('ok');});}});
+      root.classList.add('efx-ready');
+      if(!hasIO||reduce)return;
+      function tag(el,type,delay){if(el.hasAttribute('data-a'))return;el.setAttribute('data-a',type);if(delay)el.style.setProperty('--dl',delay.toFixed(2)+'s');}
+      root.querySelectorAll('.hero .wrap > *:not(.results)').forEach(function(el,i){tag(el,'down',0.1+i*0.1);});
+      root.querySelectorAll('.hero-home .wrap > *:not(.brand3d)').forEach(function(el,i){tag(el,'up',0.3+i*0.15);});
+      root.querySelectorAll('.icon3d').forEach(function(el){tag(el,'zoom',0);});
+      root.querySelectorAll('.intro .tag').forEach(function(el){tag(el,'up',0.1);});
+      root.querySelectorAll('.intro h2').forEach(function(el){tag(el,'up',0.2);});
+      root.querySelectorAll('.intro .lead').forEach(function(el){tag(el,'up',0.3);});
+      ['.results','.packs','.grid2','.grid4','.quota','.docs','.facts','.why-list','.services','.offices'].forEach(function(g){
+        root.querySelectorAll(g).forEach(function(box){Array.prototype.forEach.call(box.children,function(el,i){tag(el,'up',i*0.1);});});
+      });
+      root.querySelectorAll('.split > .col').forEach(function(el,i){tag(el,i?'right':'left',0.1);});
+      root.querySelectorAll('.step .day').forEach(function(el){tag(el,'left',0);});
+      root.querySelectorAll('.step .body').forEach(function(el){tag(el,'right',0.15);});
+      root.querySelectorAll('.faq details').forEach(function(el,i){tag(el,'up',Math.min(i,5)*0.07);});
+      root.querySelectorAll('.eyebrow, .sec h2, .sec > .wrap > .lead, .note, .tbl, .callout, .breakdown, .cta-row, .sec .wrap > div > h3, .seam').forEach(function(el){tag(el,'up',0);});
+      root.querySelectorAll('.brand3d,.band,.marquee,.letters').forEach(function(el){tag(el,el.classList.contains('brand3d')?'zoom':'up',0);});
+      root.classList.add('efx-anim');
+      var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');if(e.target.classList.contains('day'))e.target.parentNode.classList.add('seen');io.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.08});
+      root.querySelectorAll('[data-a]').forEach(function(el){io.observe(el);});
+      /* активный шаг */
+      var so=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle('on',e.isIntersecting);if(e.isIntersecting)e.target.classList.add('seen');});},{rootMargin:'-30% 0px -30% 0px'});
+      root.querySelectorAll('.step').forEach(function(el){so.observe(el);});
+      /* счётчики: <span class="count" data-to="35484">35 484</span> */
+      var co=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;co.unobserve(e.target);var el=e.target,to=+el.getAttribute('data-to'),t0=null,d=1400;
+        function fmt(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');}
+        function step(ts){if(!t0)t0=ts;var p=Math.min(1,(ts-t0)/d);p=1-Math.pow(1-p,3);el.textContent=fmt(to*p);if(p<1)requestAnimationFrame(step);}
+        requestAnimationFrame(step);});},{threshold:0.6});
+      root.querySelectorAll('.count[data-to]').forEach(function(el){co.observe(el);});
+      /* параллакс 3D-иконок */
+      var icons=root.querySelectorAll('.icon3d'),hb=root.querySelector('.hero-bg'),ticking=false;
+      function par(){ticking=false;var vh=window.innerHeight;if(hb){var y=window.scrollY||0;if(y<vh*1.2)hb.style.transform='translate3d(0,'+(y*0.3).toFixed(1)+'px,0)';}icons.forEach(function(ic){var r=ic.getBoundingClientRect();if(r.bottom<0||r.top>vh)return;var k=(r.top+r.height/2-vh/2)/vh;ic.style.translate='0 '+(k*-40).toFixed(1)+'px';});}
+      window.addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(par);}},{passive:true});par();
+    });
+  }
+
+  /* карусель писем + просмотр */
+  function extras(){
+    document.querySelectorAll('.efx .car-nav').forEach(function(n){if(n.dataset.ok)return;n.dataset.ok=1;var t=document.getElementById(n.getAttribute('data-for'));if(!t)return;
+      n.querySelector('.prev').addEventListener('click',function(){t.scrollBy({left:-460,behavior:'smooth'});});
+      n.querySelector('.next').addEventListener('click',function(){t.scrollBy({left:460,behavior:'smooth'});});});
+    var lb=document.querySelector('.efx-lb');
+    document.querySelectorAll('.efx [data-zoom]').forEach(function(b){if(b.dataset.ok)return;b.dataset.ok=1;b.addEventListener('click',function(){
+      if(!lb){lb=document.createElement('div');lb.className='efx-lb';lb.innerHTML='<img alt="">';document.body.appendChild(lb);lb.addEventListener('click',function(){lb.classList.remove('on');});
+        document.addEventListener('keydown',function(e){if(e.key==='Escape')lb.classList.remove('on');});}
+      lb.querySelector('img').src=b.getAttribute('data-zoom');lb.classList.add('on');});});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',extras);else extras();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+  window.addEventListener('load',init);
+})();
+</script>
+<!-- ===================== КОНЕЦ БЛОКА 00 ===================== -->
+
+<div class="t-rec" id="rec900"><!-- EFIX · DMCC · БЛОК 01-hero — Первый экран
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx" id="efx-dmcc-hero">
+<section class="hero has-photo">
+  <!-- Фоновое фото: JLT (DMCC), Дубай. Фото: Caleb David / Unsplash (Unsplash License). Заменить — поменять ссылку в src -->
+  <div class="hero-bg" style="background-image:url('https://images.unsplash.com/photo-1673468689376-a718918b1698?auto=format&amp;fit=crop&amp;crop=focalpoint&amp;fp-y=0.56&amp;q=70&amp;w=40&amp;h=24&amp;blur=20')">
+    <picture>
+      <source media="(max-width:720px)" srcset="https://images.unsplash.com/photo-1673468689376-a718918b1698?auto=format&amp;fit=crop&amp;crop=focalpoint&amp;fp-y=0.56&amp;q=70&amp;w=800&amp;h=1200 1x, https://images.unsplash.com/photo-1673468689376-a718918b1698?auto=format&amp;fit=crop&amp;crop=focalpoint&amp;fp-y=0.56&amp;q=70&amp;w=1200&amp;h=1800 2x">
+      <img src="https://images.unsplash.com/photo-1673468689376-a718918b1698?auto=format&amp;fit=crop&amp;crop=focalpoint&amp;fp-y=0.56&amp;q=70&amp;w=1920&amp;h=1080" srcset="https://images.unsplash.com/photo-1673468689376-a718918b1698?auto=format&amp;fit=crop&amp;crop=focalpoint&amp;fp-y=0.56&amp;q=70&amp;w=1280&amp;h=720 1280w, https://images.unsplash.com/photo-1673468689376-a718918b1698?auto=format&amp;fit=crop&amp;crop=focalpoint&amp;fp-y=0.56&amp;q=70&amp;w=1920&amp;h=1080 1920w, https://images.unsplash.com/photo-1673468689376-a718918b1698?auto=format&amp;fit=crop&amp;crop=focalpoint&amp;fp-y=0.56&amp;q=70&amp;w=2560&amp;h=1440 2560w" sizes="100vw" alt="Jumeirah Lake Towers, Дубай — район DMCC" fetchpriority="high" decoding="async" onload="this.classList.add('ok')">
+    </picture>
+  </div>
+  <div class="glow"></div>
+  <div class="wrap">
+    <div class="loc">Jumeirah Lake Towers · Дубай</div>
+    <h1>Регистрация компании в <span class="hl">DMCC</span> в&nbsp;Дубае</h1>
+    <p class="lead">Откроем компанию в одной из крупнейших free zone Дубая — подберём лицензию и пакет, оформим регистрацию, поможем с визой, банковским счётом и бухгалтерией.</p>
+    <div class="flow"><span class="c1">лицензия</span><i>→</i><span class="c2">офис</span><i>→</i><span class="c3">виза</span><i>→</i><span class="c4">банковский счёт</span><i>→</i><span class="c5">бухгалтерия</span></div>
+    <div class="price-line">
+      <span>Официальные пакеты DMCC</span>
+      <b class="pill">от 35&nbsp;484&nbsp;AED</b>
+      <span>Услуги EFIX рассчитываются отдельно и заранее фиксируются в предложении</span>
+    </div>
+    <div class="results">
+      <div class="res"><div class="num">01</div><h3>Компания и лицензия DMCC</h3><p>Подбираем activity и пакет, готовим заявку и сопровождаем регистрацию до получения <b>e-licence</b>.</p></div>
+      <div class="res"><div class="num">02</div><h3>Рабочее место / офис</h3><p>Подбираем flexi desk, co-working или офис в зависимости от <b>бюджета, виз и задач</b> бизнеса.</p></div>
+      <div class="res"><div class="num">03</div><h3>Дальнейший запуск</h3><p>По отдельному согласованию: резидентская виза, банк, бухгалтерия, Corporate Tax, VAT и аудит.</p></div>
+    </div>
+    <div class="cta-row">
+      <a class="btn" href="#quote">Получить расчёт под мой бизнес <span class="arr">→</span></a>
+      <small>Ответим с разбивкой: DMCC fees / офис / виза / услуги EFIX / ежегодные расходы</small>
+    </div>
+    <nav class="anchors">
+      <a href="#dmcc-packages">Пакеты и цены</a><a href="#dmcc-licence">Лицензии</a><a href="#dmcc-steps">Этапы</a><a href="#dmcc-docs">Документы</a><a href="#dmcc-faq">Вопросы</a><a href="#quote">Заявка</a>
+    </nav>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec901"><!-- EFIX · DMCC · БЛОК 02-packages — Пакеты
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="sec" id="dmcc-packages">
+  <div class="blob b"></div>
+  <div class="wrap">
+    <div class="center">
+      <div class="tag">Какой вариант выбрать</div>
+      <h2>Три понятных <span class="hl">варианта старта</span></h2>
+    </div>
+    <div class="packs">
+      <article class="pack">
+        <div class="vnum">ВАРИАНТ 1</div>
+        <h3>Компания без включённой визы</h3>
+        <div class="code">Basic Biz</div>
+        <div class="price"><span class="count" data-to="35484">35&nbsp;484</span> <small>AED</small></div>
+        <div class="price-cap">официальная цена DMCC</div>
+        <dl>
+          <dt>Что получает клиент</dt>
+          <dd>DMCC company + licence + специальный flexi desk, который допускает 1 residency visa. Сама виза в цену <span class="key warn">не включена</span>.</dd>
+          <dt>Кому подходит</dt>
+          <dd>Если нужна компания и лицензия, а визу можно оформить отдельно или она пока не нужна.</dd>
+        </dl>
+        <a class="btn ghost" href="#quote">Рассчитать этот вариант</a>
+      </article>
+      <article class="pack hit">
+        <span class="badge">КОМПАНИЯ + ВИЗА</span>
+        <div class="vnum">ВАРИАНТ 2</div>
+        <h3>Компания + 1 виза</h3>
+        <div class="code">Jump Start / Flexi Desk</div>
+        <div class="price"><span class="count" data-to="43780">43&nbsp;780</span> <small>AED</small></div>
+        <div class="price-cap">официальная цена DMCC</div>
+        <dl>
+          <dt>Что получает клиент</dt>
+          <dd>DMCC company + licence + standard flexi desk + <span class="key">1 UAE residency visa</span> по действующему пакету.</dd>
+          <dt>Кому подходит</dt>
+          <dd>Если владелец хочет сразу получить резидентскую визу и сохранить минимальный офисный формат.</dd>
+        </dl>
+        <a class="btn" href="#quote">Рассчитать этот вариант</a>
+      </article>
+      <article class="pack">
+        <div class="vnum">ВАРИАНТ 3</div>
+        <h3>Компания + 1 виза + co-working</h3>
+        <div class="code">Jump Start / Co-Working</div>
+        <div class="price"><span class="count" data-to="49941">49&nbsp;941</span> <small>AED</small></div>
+        <div class="price-cap">официальная цена DMCC</div>
+        <dl>
+          <dt>Что получает клиент</dt>
+          <dd>DMCC company + licence + co-working space + <span class="key">1 UAE residency visa</span> по действующему пакету.</dd>
+          <dt>Кому подходит</dt>
+          <dd>Если нужен более полноценный рабочий формат в DMCC Business Centre.</dd>
+        </dl>
+        <a class="btn ghost" href="#quote">Рассчитать этот вариант</a>
+      </article>
+    </div>
+    <div class="callout">
+      <span class="mk">!</span>
+      <div><b>Важно</b><p>Это цены пакетов DMCC, а <span class="mark">не итоговая цена услуги EFIX</span>. До оплаты вы получаете расчёт, где отдельно показаны: официальный платёж DMCC, дополнительные расходы, услуги EFIX и ожидаемые расходы на продление.</p></div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec902"><!-- EFIX · DMCC · БЛОК 03-cost — Что входит и что отдельно
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="intro">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div class="icon3d"><img src="https://static.tildacdn.com/tild3339-3962-4264-b432-636464616364/Fund_Transfer_-_blue.svg" alt="" loading="lazy" decoding="async" width="170" height="170"></div>
+    <div class="tag">Что входит и что оплачивается отдельно</div>
+    <h2>Из чего складывается <span class="hl">итоговая стоимость</span></h2>
+  </div>
+</section>
+<section class="sec" style="padding-top:24px">
+  <div class="wrap">
+    <div class="split">
+      <div class="col">
+        <h3><span class="pill">Входит</span> Обычно входит в выбранный пакет DMCC</h3>
+        <ul>
+          <li>Регистрация компании и licence в составе конкретного package offer</li>
+          <li>Flexi desk / co-working — если прямо указан в пакете</li>
+          <li>1 residency visa — только в тех пакетах, где DMCC прямо пишет, что она включена</li>
+          <li>Пакетные benefits — только в объёме действующих T&amp;C</li>
+        </ul>
+      </div>
+      <div class="col out">
+        <h3><span class="pill sky">Отдельно</span> Может оплачиваться отдельно</h3>
+        <ul>
+          <li>Услуги EFIX по регистрации и сопровождению</li>
+          <li>Дополнительные визы, Emirates ID, medical, insurance — если не включены в пакет</li>
+          <li>Отдельный офис, fit-out, deposits, utility charges и tenancy-related fees</li>
+          <li>Внешние approvals, special activity fees, attestation / translation, audit, bank support, accounting and tax services</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:48px">
+      <h3>Если не брать специальный пакет</h3>
+      <p style="margin-bottom:20px;max-width:760px">Для стандартной регистрации DMCC без package offer базовые официальные сборы составляют <span class="key">34&nbsp;185&nbsp;AED</span> до офиса и других применимых платежей:</p>
+      <table class="tbl fees">
+        <thead><tr><th>Сбор DMCC</th><th>Цена</th></tr></thead>
+        <tbody>
+          <tr><td>Application</td><td>1&nbsp;035&nbsp;AED</td></tr>
+          <tr><td>Registration</td><td>9&nbsp;020&nbsp;AED</td></tr>
+          <tr><td>Articles of Association</td><td>2&nbsp;020&nbsp;AED</td></tr>
+          <tr><td>Licence</td><td>20&nbsp;285&nbsp;AED</td></tr>
+          <tr><td>Establishment Card</td><td>1&nbsp;825&nbsp;AED</td></tr>
+          <tr class="total"><td>Итого базовые сборы</td><td>34&nbsp;185&nbsp;AED</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec903"><!-- EFIX · DMCC · БЛОК 04-efix — Что делает EFIX
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="sec">
+  <div class="wrap">
+    <div class="seam" style="margin-bottom:64px"></div>
+    <div class="tag">Что делает EFIX</div>
+    <h2>Что именно делает <span class="hl">EFIX</span></h2>
+    <table class="tbl c3">
+      <thead><tr><th>Этап</th><th>Что делает EFIX</th><th>Что получает клиент</th></tr></thead>
+      <tbody>
+        <tr><td>До регистрации</td><td data-l="Что делает EFIX">Проверяем activity, ownership structure, необходимость виз, офис и ограничения по mainland operations.</td><td data-l="Что получает клиент"><b>Понятный вариант структуры</b> без лишних лицензий и расходов.</td></tr>
+        <tr><td>Регистрация</td><td data-l="Что делает EFIX">Готовим документы, заявку, company name, UBO data, отвечаем на запросы DMCC и сопровождаем e-signing.</td><td data-l="Что получает клиент"><b>DMCC registration pack и e-licence</b> после выполнения условий DMCC.</td></tr>
+        <tr><td>После лицензии</td><td data-l="Что делает EFIX">По запросу запускаем residency visa, bank application, bookkeeping, Corporate Tax/VAT compliance и audit preparation.</td><td data-l="Что получает клиент"><b>Компания готова</b> к операционной работе и дальнейшему compliance.</td></tr>
+      </tbody>
+    </table>
+    <div class="breakdown">
+      <b>Формат расчёта от EFIX</b>
+      <p>Вы получаете не одну общую цифру, а <span class="mark">разбивку по статьям</span>:</p>
+      <div class="chips"><span>DMCC</span><span>Офис</span><span>Визы</span><span>Внешние расходы</span><span>Услуги EFIX</span><span>Ориентир ежегодного продления</span></div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec904"><!-- EFIX · DMCC · БЛОК 05-scenarios — Кому подходит DMCC
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="sec">
+  <div class="blob a"></div>
+  <div class="wrap">
+    <div class="tag">Кому подходит DMCC</div>
+    <h2>Когда DMCC <span class="hl">имеет смысл</span> выбирать</h2>
+    <div class="grid2">
+      <div class="card"><div class="num">01</div><h3>Международная торговля</h3><p>Широкий перечень trading activities, сильная деловая инфраструктура и расположение в Дубае.</p></div>
+      <div class="card"><div class="num">02</div><h3>Консалтинг и услуги</h3><p>Можно начать с flexi desk или co-working, если это допускается выбранной activity и пакетом.</p></div>
+      <div class="card"><div class="num">03</div><h3>Технологический бизнес</h3><p>Есть обычные service activities и специализированные экосистемы DMCC, включая <b>AI, Gaming и Crypto</b> — при соблюдении их требований.</p></div>
+      <div class="card"><div class="num">04</div><h3>Компания с реальным офисом в Дубае</h3><p>Можно перейти от flexi desk к serviced или physical office и <b>увеличить визовую квоту</b>.</p></div>
+    </div>
+    <div class="callout ok">
+      <span class="mk">i</span>
+      <div><p>Если ключевой критерий — только минимальная цена регистрации, DMCC обычно имеет смысл сравнить с более бюджетными free zones. Если важны <span class="mark">локация в Дубае, статус DMCC, инфраструктура и физический офис</span> — сравнение уже будет другим.</p></div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec905"><!-- EFIX · DMCC · БЛОК 06-licence — Лицензии
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="sec" id="dmcc-licence">
+  <div class="wrap">
+    <div class="tag">Лицензии и деятельность</div>
+    <h2>Какую <span class="hl">лицензию</span> выбрать</h2>
+    <table class="tbl c3">
+      <thead><tr><th>Если бизнес делает…</th><th>Обычно рассматривают</th><th>Что дополнительно проверяем</th></tr></thead>
+      <tbody>
+        <tr><td>Покупает и продаёт товары</td><td data-l="Обычно рассматривают"><span class="pill ghost">Trading / General Trading</span></td><td data-l="Что дополнительно проверяем">Точный activity code, товар, склад, customs и возможные внешние approvals.</td></tr>
+        <tr><td>Оказывает консультационные или профессиональные услуги</td><td data-l="Обычно рассматривают"><span class="pill ghost">Service</span></td><td data-l="Что дополнительно проверяем">Точный код, квалификационные требования и место фактической деятельности.</td></tr>
+        <tr><td>Производит или перерабатывает продукцию</td><td data-l="Обычно рассматривают"><span class="pill ghost">Industrial</span></td><td data-l="Что дополнительно проверяем">Помещение, approvals, оборудование, fire/safety и другие отраслевые требования.</td></tr>
+        <tr><td>Работает в crypto / AI / gaming</td><td data-l="Обычно рассматривают">Соответствующие approved activities и специализированные programmes</td><td data-l="Что дополнительно проверяем">Eligibility, AML/CFT, regulator approvals и DMCC package T&amp;C.</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Перед подачей заявки сначала проверяем <b>activity code и применимые approvals</b> — от этого зависит, какой вариант регистрации доступен.</p>
+    <div class="cta-row"><a class="btn" href="#quote">Проверить мою деятельность <span class="arr">→</span></a></div>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec906"><!-- EFIX · DMCC · БЛОК 07-forms — Юридические формы
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="sec">
+  <div class="wrap">
+    <div class="tag">Юридические формы</div>
+    <h2>Как можно <span class="hl">зарегистрироваться</span> в DMCC</h2>
+    <table class="tbl c3">
+      <thead><tr><th>Форма</th><th>Простое объяснение</th><th>Когда выбирают</th></tr></thead>
+      <tbody>
+        <tr><td>Новая DMCC company</td><td data-l="Простое объяснение">Отдельное юридическое лицо в DMCC с одним или несколькими shareholders.</td><td data-l="Когда выбирают"><b>Основной вариант</b> для нового бизнеса.</td></tr>
+        <tr><td>Subsidiary</td><td data-l="Простое объяснение">Отдельная DMCC company, shareholder которой — существующая компания.</td><td data-l="Когда выбирают">Когда бизнес принадлежит иностранной или UAE parent company.</td></tr>
+        <tr><td>Branch</td><td data-l="Простое объяснение">Филиал уже существующей компании; отдельного юридического лица не создаётся.</td><td data-l="Когда выбирают">Когда нужно присутствие в DMCC без отдельной subsidiary.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <span class="mk">i</span>
+      <div><b>Минимальный share capital — <span class="hl">50&nbsp;000&nbsp;AED</span></b><p>Так указывают стандартные материалы DMCC для обычной company setup. Для специальных или регулируемых activities требования подтверждаем отдельно.</p></div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec907"><!-- EFIX · DMCC · БЛОК 08-steps — Шаг за шагом
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="sec" id="dmcc-steps">
+  <div class="blob a"></div>
+  <div class="wrap">
+    <div class="center">
+      <div class="tag">Шаг за шагом</div>
+      <h2 style="margin-bottom:48px">Как проходит <span class="hl">регистрация</span></h2>
+    </div>
+    <ol class="stepper">
+      <li class="step"><div class="day"><small>Шаг</small></div><div class="body"><h3>Расчёт</h3>
+        <div class="who"><span class="you">Вы</span><p>Сообщаете activity, владельцев, количество виз и нужен ли офис.</p></div>
+        <div class="who"><span class="we">Мы</span><p>Предлагаем подходящий пакет и бюджет.</p></div></div></li>
+      <li class="step"><div class="day"><small>Шаг</small></div><div class="body"><h3>Документы</h3>
+        <div class="who"><span class="we">Мы</span><p>Собираем паспорта, proof of address, UBO и корпоративные документы, если shareholder — компания.</p></div></div></li>
+      <li class="step"><div class="day"><small>Шаг</small></div><div class="body"><h3>Заявка в DMCC</h3>
+        <div class="who"><span class="we">Мы</span><p>Подаём application, резервируем company name и сопровождаем compliance review.</p></div></div></li>
+      <li class="step"><div class="day"><small>Шаг</small></div><div class="body"><h3>Оплата и e-signing</h3>
+        <div class="who"><span class="you">Вы</span><p>После approval оплачиваются официальные fees и подписываются документы.</p></div></div></li>
+      <li class="step"><div class="day"><small>Шаг</small></div><div class="body"><h3>Licence и запуск</h3>
+        <div class="who"><span class="we">Мы</span><p>Получаем e-licence. Затем по отдельному согласованию оформляем visa, bank account и accounting/tax setup.</p></div></div></li>
+    </ol>
+    <div class="callout ok" style="max-width:980px;margin-left:auto;margin-right:auto">
+      <span class="mk">≈</span>
+      <div><b>Около <span class="hl">10 рабочих дней</span></b><p>Ориентир DMCC для стандартного полного кейса при корректных документах. Это не гарантированный срок: regulated activities, corporate shareholders и дополнительные approvals могут увеличить период.</p></div>
+    </div>
+    <div class="center"><div class="cta-row"><a class="btn" href="#quote">Начать регистрацию <span class="arr">→</span></a></div></div>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec908"><!-- EFIX · DMCC · БЛОК 09-docs — Документы
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="intro" id="dmcc-docs">
+  <div class="glow sky"></div>
+  <div class="wrap">
+    <div class="icon3d"><img src="https://static.tildacdn.com/tild3236-3738-4738-b263-633234633439/Frame_2085661021.svg" alt="" loading="lazy" decoding="async" width="170" height="170"></div>
+    <div class="tag">Документы</div>
+    <h2>Что понадобится <span class="hl">от клиента</span></h2>
+  </div>
+</section>
+<section class="sec" style="padding-top:24px">
+  <div class="wrap">
+    <div class="docs">
+      <ul class="checklist">
+        <li>Паспорт каждого shareholder / director / manager — по структуре компании</li>
+        <li>Proof of residential address</li>
+        <li>UAE visa и Emirates ID — если уже есть</li>
+        <li>Сведения о UBO и источнике средств/деятельности — если запрашиваются в рамках compliance</li>
+        <li>Дополнительные документы — если activity регулируемая</li>
+      </ul>
+      <div class="card">
+        <div class="num">ЕСЛИ ВЛАДЕЛЕЦ — КОМПАНИЯ</div>
+        <p>Понадобятся corporate documents parent company: certificate of incorporation/registration, constitutional documents, incumbency/good standing или аналогичные подтверждения, corporate resolutions, сведения о directors и UBO.</p>
+        <p>Для иностранных документов могут потребоваться <b>attestation/legalisation и перевод</b>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec909"><!-- EFIX · DMCC · БЛОК 10-office — Офис и визовая квота
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="intro">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div class="icon3d"><img src="https://static.tildacdn.com/tild3664-3562-4836-b061-356361396637/image_42.svg" alt="" loading="lazy" decoding="async" width="170" height="170"></div>
+    <div class="tag">Офис и визовая квота</div>
+    <h2>Как выбрать <span class="hl">офис</span></h2>
+  </div>
+</section>
+<section class="sec" style="padding-top:24px">
+  <div class="wrap">
+    <table class="tbl c3">
+      <thead><tr><th>Формат</th><th>Ориентир DMCC</th><th>Когда выбирать</th></tr></thead>
+      <tbody>
+        <tr><td>Flexi Desk</td><td data-l="Ориентир DMCC"><span class="pill">16&nbsp;000–19&nbsp;000&nbsp;AED</span></td><td data-l="Когда выбирать">Если нужен минимальный office solution и небольшая visa quota.</td></tr>
+        <tr><td>Co-Working</td><td data-l="Ориентир DMCC"><span class="pill">19&nbsp;000&nbsp;AED</span></td><td data-l="Когда выбирать">Если нужно рабочее место и более удобный daily-use формат.</td></tr>
+        <tr><td>Serviced Desk</td><td data-l="Ориентир DMCC"><span class="pill">22&nbsp;000–35&nbsp;000&nbsp;AED</span></td><td data-l="Когда выбирать">Для небольших команд без отдельного fit-out.</td></tr>
+        <tr><td>Serviced Office</td><td data-l="Ориентир DMCC"><span class="pill">35&nbsp;000–140&nbsp;000&nbsp;AED</span></td><td data-l="Когда выбирать">Для постоянной команды и собственного закрытого пространства.</td></tr>
+      </tbody>
+    </table>
+    <div class="quota">
+      <div><strong>до 3 виз</strong><span>Flexi desk — по актуальным материалам DMCC</span></div>
+      <div><strong>4–5 виз</strong><span>Serviced office — обычно, в зависимости от решения</span></div>
+      <div><strong>1 виза / 9 м²</strong><span>Physical office — ориентир</span></div>
+    </div>
+    <p class="note">Точная quota подтверждается для конкретной компании.</p>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec910"><!-- EFIX · DMCC · БЛОК 11-visas — Визы
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="sec">
+  <div class="wrap">
+    <div class="tag">Визы</div>
+    <h2>Что важно знать о <span class="hl">визах</span></h2>
+    <table class="tbl">
+      <thead><tr><th>Ситуация</th><th>Что это означает</th></tr></thead>
+      <tbody>
+        <tr><td>Basic Biz</td><td data-l="Что это означает">Flexi desk допускает 1 residency visa, но сама visa <span class="key warn">не включена</span> в цену пакета.</td></tr>
+        <tr><td>Jump Start</td><td data-l="Что это означает">1 UAE residency visa <span class="key">включена</span> в действующий package offer.</td></tr>
+        <tr><td>Нужны дополнительные визы</td><td data-l="Что это означает">Проверяем quota и считаем immigration fees отдельно.</td></tr>
+        <tr><td>Есть licence и свободная quota</td><td data-l="Что это означает">Это ещё не означает автоматическое одобрение visa: решение принимает компетентный орган.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec911"><!-- EFIX · DMCC · БЛОК 12-bank — Банковский счёт
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="intro">
+  <div class="glow sky"></div>
+  <div class="wrap">
+    <div class="icon3d"><img src="https://static.tildacdn.com/tild3465-3563-4833-b633-613561393636/Economic_Policy_-_bl.svg" alt="" loading="lazy" decoding="async" width="170" height="170"></div>
+    <div class="tag">Банковский счёт</div>
+    <h2>Открытие <span class="hl">корпоративного счёта</span></h2>
+    <p class="lead">После licence EFIX может отдельно сопровождать bank application: подготовить company profile, документы shareholders/UBO, business description, contracts и source of funds/wealth evidence.</p>
+  </div>
+</section>
+<section class="sec" style="padding-top:8px">
+  <div class="wrap">
+    <div class="callout warn" style="max-width:860px;margin-left:auto;margin-right:auto">
+      <span class="mk">!</span>
+      <div><b>Банк принимает решение сам</b><p>DMCC licence <span class="mark">не гарантирует открытие банковского счёта</span>. Банк проводит собственную KYC/AML-проверку и самостоятельно принимает решение.</p></div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec912"><!-- EFIX · DMCC · БЛОК 13-tax — Corporate Tax и VAT
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="sec">
+  <div class="wrap">
+    <div class="tag">Налоги</div>
+    <h2><span class="hl">Corporate Tax</span> и VAT</h2>
+    <div class="grid2">
+      <div class="card"><div class="num">CORPORATE TAX</div><p>Компания в DMCC <span class="mark">не получает 0% автоматически</span>. Ставка 0% может применяться к Qualifying Income, если компания соответствует условиям Qualifying Free Zone Person (QFZP). Для иного taxable income применяется режим, установленный UAE Corporate Tax legislation.</p></div>
+      <div class="card"><div class="num">VAT</div><p>Нахождение в free zone <span class="mark">не означает автоматическое освобождение от VAT</span>. VAT registration и ставка зависят от оборота и характера операций.</p></div>
+    </div>
+    <div class="callout ok">
+      <span class="mk">✓</span>
+      <div><b>Что мы проверим</b><p>Может ли ваша модель претендовать на режим QFZP и какие VAT obligations у неё возникают.</p></div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec913"><!-- EFIX · DMCC · БЛОК 14-accounting — Бухгалтерия и аудит
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="sec">
+  <div class="wrap">
+    <div class="tag">Бухгалтерия и аудит</div>
+    <h2>Что нужно делать <span class="hl">после регистрации</span></h2>
+    <div class="docs">
+      <ul class="checklist">
+        <li>Вести бухгалтерский учёт и хранить подтверждающие документы.</li>
+        <li>Выполнять Corporate Tax и VAT obligations, если они применимы.</li>
+        <li>Подавать ежегодные audited financial statements в DMCC <b>в течение 6 месяцев</b> после окончания financial year.</li>
+        <li>Использовать auditor, соответствующего требованиям DMCC Approved Auditors Rules.</li>
+      </ul>
+      <div class="card"><div class="num">ЧЕМ ПОМОЖЕТ EFIX</div><p>EFIX может вести бухгалтерию, готовить налоговые расчёты и подготовить документы к аудиту. Услуги аудитора оплачиваются отдельно.</p></div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec914"><!-- EFIX · DMCC · БЛОК 15-renewal — Продление и изменения
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="intro">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div class="icon3d"><img src="https://static.tildacdn.com/tild3439-6436-4436-b638-393464646361/Frame_2085661021.svg" alt="" loading="lazy" decoding="async" width="170" height="170"></div>
+    <div class="tag">После регистрации</div>
+    <h2>Что будет <span class="hl">после первого года</span></h2>
+    <p class="lead">Первый год и продление могут стоить по-разному: промо-пакет или стартовая скидка не обязаны сохраняться при renewal. Поэтому в расчёте показываем не только стартовый бюджет, но и <b>ориентир расходов на следующий год</b>.</p>
+  </div>
+</section>
+<section class="sec" style="padding-top:24px">
+  <div class="wrap">
+    <table class="tbl">
+      <thead><tr><th>Событие</th><th>Что обычно проверяем</th></tr></thead>
+      <tbody>
+        <tr><td>Renewal</td><td data-l="Что обычно проверяем">Licence, office/tenancy, establishment card, compliance status и действующие renewal package terms.</td></tr>
+        <tr><td>Добавление activity</td><td data-l="Что обычно проверяем">Допустимость activity, external approvals и licence amendment fee.</td></tr>
+        <tr><td>Смена shareholder / manager / name / office</td><td data-l="Что обычно проверяем">Corporate documents, service request и официальные fees.</td></tr>
+        <tr><td>Закрытие</td><td data-l="Что обычно проверяем">Winding up / deregistration procedure, visas, employees, office, bank, taxes и возможный liquidator/audit.</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Текущий Schedule of Charges указывает Company Winding Up fee <span class="key">4&nbsp;015&nbsp;AED</span>; иные расходы при закрытии зависят от ситуации.</p>
+  </div>
+</section>
+</div>
+</div>
+<div class="t-rec" id="rec915"><!-- EFIX · DMCC · БЛОК 16-faq — Частые вопросы
+     Вставлять в отдельный блок T123 «HTML-код». Требует блок 00-core (стили) на этой же странице. -->
+<div class="efx">
+<section class="sec" id="dmcc-faq">
+  <div class="wrap">
+    <div class="center">
+      <div class="tag">Частые вопросы</div>
+      <h2>Частые вопросы о <span class="hl">DMCC</span></h2>
+    </div>
+    <div class="faq">
+      <details open><summary>Сколько минимум стоит открыть компанию в DMCC?</summary><p>На дату проверки самый простой из рассматриваемых пакетов — Basic Biz за 35&nbsp;484&nbsp;AED. Услуги EFIX и дополнительные расходы рассчитываются отдельно.</p></details>
+      <details><summary>Есть ли пакет сразу с визой?</summary><p>Да. Jump Start сейчас включает 1 UAE residency visa. Basic Biz саму визу не включает.</p></details>
+      <details><summary>Можно ли открыть компанию удалённо?</summary><p>Да, company formation у DMCC цифровой. Для residency visa личное присутствие обычно понадобится на обязательных этапах.</p></details>
+      <details><summary>Нужен ли офис?</summary><p>Нужен registered address/office solution в DMCC. Это может быть flexi desk, co-working, serviced или physical office.</p></details>
+      <details><summary>Сколько занимает регистрация?</summary><p>DMCC указывает ориентир около 10 рабочих дней для стандартного полного кейса. Срок может увеличиться из-за regulated activity, corporate shareholders или extra approvals.</p></details>
+      <details><summary>Нужен ли капитал?</summary><p>Стандартные setup materials DMCC указывают 50&nbsp;000&nbsp;AED для обычной company setup. Для special/regulated activities проверяем отдельно.</p></details>
+      <details><summary>Можно ли работать с mainland-клиентами?</summary><p>Да, но модель работы нужно проверять по activity и месту фактических операций. Для отдельных операций могут потребоваться дополнительные permits/licence или иная структура.</p></details>
+      <details><summary>Будет ли 0% Corporate Tax?</summary><p>Не автоматически. 0% зависит от соблюдения требований QFZP и характера дохода.</p></details>
+      <details><summary>Нужен ли аудит?</summary><p>Да. DMCC требует annual audited financial statements в течение 6 месяцев после financial year-end.</p></details>
+      <details><summary>Поможете открыть счёт?</summary><p>Да, можем отдельно сопровождать bank application. Но окончательное решение всегда принимает банк.</p></details>
+    </div>
+  </div>
+</section>
+</div>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Service","name":"Регистрация компании в DMCC","serviceType":"Company formation in DMCC free zone","provider":{"@type":"Organization","name":"EFIX GRP","url":"https://efix-grp.ae/"},"areaServed":"Dubai, UAE","url":"https://efix-grp.ae/ru/dmcc-company-setup"},
+{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Главная","item":"https://efix-grp.ae/ru"},{"@type":"ListItem","position":2,"name":"Регистрация компании в DMCC","item":"https://efix-grp.ae/ru/dmcc-company-setup"}]},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Сколько минимум стоит открыть компанию в DMCC?","acceptedAnswer":{"@type":"Answer","text":"На дату проверки самый простой из рассматриваемых пакетов — Basic Biz за 35 484 AED. Услуги EFIX и дополнительные расходы рассчитываются отдельно."}},
+{"@type":"Question","name":"Есть ли пакет сразу с визой?","acceptedAnswer":{"@type":"Answer","text":"Да. Jump Start сейчас включает 1 UAE residency visa. Basic Biz саму визу не включает."}},
+{"@type":"Question","name":"Можно ли открыть компанию удалённо?","acceptedAnswer":{"@type":"Answer","text":"Да, company formation у DMCC цифровой. Для residency visa личное присутствие обычно понадобится на обязательных этапах."}},
+{"@type":"Question","name":"Нужен ли офис?","acceptedAnswer":{"@type":"Answer","text":"Нужен registered address/office solution в DMCC. Это может быть flexi desk, co-working, serviced или physical office."}},
+{"@type":"Question","name":"Сколько занимает регистрация?","acceptedAnswer":{"@type":"Answer","text":"DMCC указывает ориентир около 10 рабочих дней для стандартного полного кейса. Срок может увеличиться из-за regulated activity, corporate shareholders или extra approvals."}},
+{"@type":"Question","name":"Нужен ли капитал?","acceptedAnswer":{"@type":"Answer","text":"Стандартные setup materials DMCC указывают 50 000 AED для обычной company setup. Для special/regulated activities проверяем отдельно."}},
+{"@type":"Question","name":"Можно ли работать с mainland-клиентами?","acceptedAnswer":{"@type":"Answer","text":"Да, но модель работы нужно проверять по activity и месту фактических операций. Для отдельных операций могут потребоваться дополнительные permits/licence или иная структура."}},
+{"@type":"Question","name":"Будет ли 0% Corporate Tax?","acceptedAnswer":{"@type":"Answer","text":"Не автоматически. 0% зависит от соблюдения требований QFZP и характера дохода."}},
+{"@type":"Question","name":"Нужен ли аудит?","acceptedAnswer":{"@type":"Answer","text":"Да. DMCC требует annual audited financial statements в течение 6 месяцев после financial year-end."}},
+{"@type":"Question","name":"Поможете открыть счёт?","acceptedAnswer":{"@type":"Answer","text":"Да, можем отдельно сопровождать bank application. Но окончательное решение всегда принимает банк."}}]}
+]}
+</script>
+</div>
+<!-- EFIX · ПОДВАЛ САЙТА НА КОДЕ (необязательный блок)
+     Если на странице стоит ваш подвал Tilda — этот блок не нужен.
+     Вставлять последним блоком T123. Работает сам по себе, без блока 00-core. -->
+<style>
+.efx-ftr{--t:#FFFDF6;--m:#8B8C88;--teal:#65E8CC;position:relative;overflow:hidden;font-family:Manrope,Arial,sans-serif;color:var(--t);background:#16171F;border-top:1px solid rgba(255,253,246,.07)}
+.efx-ftr *{box-sizing:border-box;margin:0;padding:0}
+.efx-ftr a{color:inherit;text-decoration:none}
+.efx-ftr::before{content:"";position:absolute;left:50%;top:-260px;width:900px;height:420px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(79,189,179,.22),transparent);pointer-events:none}
+.efx-ftr .in{position:relative;max-width:1240px;margin:0 auto;padding:64px 20px 28px;display:grid;grid-template-columns:1.1fr 1.6fr 1fr;gap:40px}
+.efx-ftr .logo img{height:46px;width:auto;display:block;margin-bottom:18px}
+.efx-ftr .about{font-size:14px;color:var(--m);line-height:1.6;max-width:300px}
+.efx-ftr h4{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--m);margin-bottom:16px}
+.efx-ftr .links{columns:2;column-gap:28px}
+.efx-ftr .links a{display:block;break-inside:avoid;padding:6px 0;font-size:15px;color:rgba(255,253,246,.82);transition:color .2s,transform .2s}
+.efx-ftr .links a:hover{color:var(--teal);transform:translateX(3px)}
+.efx-ftr .ct a{display:block;font-size:18px;font-weight:600;margin-bottom:6px;transition:color .2s}
+.efx-ftr .ct a:hover{color:var(--teal)}
+.efx-ftr .soc{display:flex;gap:12px;margin-top:22px}
+.efx-ftr .soc a{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:rgba(255,253,246,.06);border:1px solid rgba(255,253,246,.1);transition:background .2s,transform .2s,border-color .2s}
+.efx-ftr .soc a:hover{background:rgba(101,232,204,.12);border-color:rgba(101,232,204,.4);transform:translateY(-3px)}
+.efx-ftr .soc img{width:22px;height:22px}
+.efx-ftr .bot{position:relative;max-width:1240px;margin:0 auto;padding:20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid rgba(255,253,246,.07);font-size:13px;color:var(--m)}
+.efx-ftr .bot a:hover{color:var(--t)}
+@media (max-width:960px){.efx-ftr .in{grid-template-columns:1fr;gap:32px;padding-top:48px}}
+@media (max-width:520px){.efx-ftr .links{columns:1}}
+</style>
+<footer class="efx-ftr">
+  <div class="in">
+    <div>
+      <a class="logo" href="https://efix-grp.ae/ru"><img src="https://static.tildacdn.com/tild3137-6236-4166-b065-363935663233/Group_41.svg" alt="EFIX GRP"></a>
+    </div>
+    <div>
+      <h4>Услуги</h4>
+      <div class="links">
+        <a href="https://efix-grp.ae/ru">О нас</a>
+        <a href="https://efix-grp.ae/ru/accounting">Бухгалтерия и кадры</a>
+        <a href="https://efix-grp.ae/ru/recruitment">Подбор персонала</a>
+        <a href="https://efix-grp.ae/applying_visa_uae">Оформление визы в ОАЭ</a>
+        <a href="https://efix-grp.ae/ru/tax_consulting_vat">Налоговый консалтинг по VAT</a>
+        <a href="https://efix-grp.ae/ru/tax_consulting_cpt">Налоговый консалтинг по CPT</a>
+        <a href="https://efix-grp.ae/company_registration_in_uae_mainland">Регистрация компании в ОАЭ Mainland</a>
+        <a href="https://efix-grp.ae/company_registration_in_uae_maydan">Регистрация компании в ОАЭ Meydan</a>
+        <a href="https://efix-grp.ae/ru/publications">Публикации</a>
+      </div>
+    </div>
+    <div>
+      <h4>Наши контакты</h4>
+      <div class="ct"><a href="mailto:hello@efix-grp.ae">hello@efix-grp.ae</a><a href="tel:+971585278077">+971 58 5278077</a></div>
+      <h4 style="margin-top:28px">Социальные сети</h4>
+      <div class="soc">
+        <a href="https://www.facebook.com/efixgroup" target="_blank" rel="noopener" aria-label="Facebook"><img src="https://static.tildacdn.com/tild6333-6464-4563-a163-383032326463/free-icon-facebook-1.svg" alt=""></a>
+        <a href="https://instagram.com/efix_grp" target="_blank" rel="noopener" aria-label="Instagram"><img src="https://static.tildacdn.com/tild3237-6338-4735-a432-623535373363/free-icon-instagram-.svg" alt=""></a>
+        <a href="https://wa.me/971585278077" target="_blank" rel="noopener" aria-label="WhatsApp"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt=""></a>
+        <a href="https://t.me/efix_grp" target="_blank" rel="noopener" aria-label="Telegram"><img src="https://static.tildacdn.com/tild6136-3365-4130-a336-373630316562/telegram_1.svg" alt=""></a>
+        <a href="https://youtube.com/@efix_grp" target="_blank" rel="noopener" aria-label="YouTube"><img src="https://static.tildacdn.com/tild3033-3237-4564-b637-366136313164/YouTube.svg" alt=""></a>
+      </div>
+    </div>
+  </div>
+  <div class="bot"><span>2023 ⓒ EFIX GRP</span><a href="https://efix-grp.ae/ru/policy">Политика конфиденциальности</a></div>
+</footer>
+
+<!-- EFIX · НАВИГАЦИЯ ПО СТРАНИЦЕ (содержание) — один блок T123 «HTML-код», ставится в любое место страницы (удобно — в самый конец).
+     Работает на страницах из Zero Block: прокручивает к блокам по их номерам (#rec…), подсвечивает текущий раздел.
+     Компьютер — узкая панель слева, раскрывается при наведении. Телефон — кнопка «Содержание» внизу слева.
+
+     Как настроить под страницу: заполните список ITEMS ниже — название раздела и номер блока.
+     Номер блока: в редакторе Tilda → Настройки блока → внизу «ID блока» (rec123456789), или спросите у разработчика.
+     Если оставить список пустым ( ITEMS:[] ) — разделы соберутся автоматически по заголовкам Zero Block. -->
+<style>
+.efn{--t:#FFFDF6;--m:#8B8C88;--gold:#CDA64F;--teal:#65E8CC;--panel:rgba(30,32,42,.92);--line:rgba(255,253,246,.1);font-family:Manrope,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.efn *{box-sizing:border-box;margin:0;padding:0}
+.efn button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+/* компьютер */
+.efn .rail{position:fixed;left:14px;top:50%;z-index:9980;transform:translate(-24px,-50%);opacity:0;visibility:hidden;transition:opacity .35s,transform .35s,visibility .35s}
+.efn.on .rail{opacity:1;visibility:visible;transform:translate(0,-50%)}
+.efn .box{position:relative;padding:14px 10px;border-radius:18px;background:var(--panel);border:1px solid var(--line);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 18px 40px -18px rgba(0,0,0,.7);width:44px;overflow:hidden;transition:width .3s cubic-bezier(.2,.7,.2,1)}
+.efn .rail:hover .box,.efn .rail:focus-within .box{width:330px}
+.efn .head{display:flex;align-items:center;gap:10px;height:22px;margin:0 0 8px 4px;white-space:nowrap;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--m)}
+.efn .head b{flex:none;display:grid;place-items:center;width:16px;font-size:11px;color:var(--gold);letter-spacing:0}
+.efn ol{list-style:none;position:relative}
+.efn ol::before{content:"";position:absolute;left:11px;top:10px;bottom:10px;width:1px;background:rgba(255,253,246,.12)}
+.efn li a{position:relative;display:flex;align-items:center;gap:14px;height:30px;padding:0 6px 0 4px;border-radius:9px;color:rgba(255,253,246,.62);font-size:14px;font-weight:500;white-space:nowrap;text-decoration:none;transition:color .2s,background .2s}
+.efn li a i{flex:none;position:relative;z-index:1;width:16px;height:16px;display:grid;place-items:center}
+.efn li a i::before{content:"";width:7px;height:7px;border-radius:50%;background:rgba(255,253,246,.35);transition:all .25s}
+.efn .rail li a b{display:none}
+.efn li a span{overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .2s}
+.efn .rail:hover li a span,.efn .rail:focus-within li a span,.efn .rail:hover .head span{opacity:1}
+.efn .head span{opacity:0;transition:opacity .2s}
+.efn li a:hover{color:var(--t);background:rgba(255,253,246,.05)}
+.efn li a.past i::before{background:rgba(101,232,204,.55)}
+.efn li a.cur{color:var(--t)}
+.efn li a.cur i::before{width:6px;height:16px;border-radius:4px;background:var(--gold);box-shadow:0 0 12px rgba(205,166,79,.6)}
+.efn .prog{margin:10px 4px 0;height:3px;border-radius:3px;background:rgba(255,253,246,.1);overflow:hidden}
+.efn .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),#E9C77C);transition:width .2s}
+/* телефон */
+.efn .fab{position:fixed;left:14px;bottom:16px;z-index:9980;display:none;align-items:center;gap:10px;height:46px;padding:0 16px 0 8px;border-radius:30px;background:var(--panel);border:1px solid var(--line);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 14px 30px -12px rgba(0,0,0,.7);color:var(--t);font-size:14px;font-weight:600;opacity:0;transform:translateY(20px);pointer-events:none;transition:opacity .3s,transform .3s}
+.efn.on .fab{opacity:1;transform:none;pointer-events:auto}
+.efn .fab svg{flex:none;width:30px;height:30px;transform:rotate(-90deg)}
+.efn .fab .r1{fill:none;stroke:rgba(255,253,246,.15);stroke-width:3}
+.efn .fab .r2{fill:none;stroke:var(--gold);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .2s}
+.efn .fab em{font-style:normal;color:var(--m);font-weight:500}
+.efn .sheet{position:fixed;left:0;right:0;bottom:0;z-index:9995;max-height:78vh;display:flex;flex-direction:column;padding:10px 16px 20px;border-radius:22px 22px 0 0;background:#1E2029;border-top:1px solid var(--line);box-shadow:0 -20px 50px rgba(0,0,0,.5);transform:translateY(105%);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.efn.sheet-open .sheet{transform:none}
+.efn .shade{position:fixed;inset:0;z-index:9994;background:rgba(0,0,0,.5);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.efn.sheet-open .shade{opacity:1;visibility:visible}
+.efn .grip{width:40px;height:4px;border-radius:4px;background:rgba(255,253,246,.25);margin:0 auto 12px}
+.efn .sheet h4{display:flex;justify-content:space-between;align-items:center;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--m);margin:0 4px 8px}
+.efn .sheet h4 button{width:34px;height:34px;border-radius:50%;background:rgba(255,253,246,.06);font-size:18px;color:var(--t)}
+.efn .sheet ol{overflow-y:auto;-webkit-overflow-scrolling:touch}
+.efn .sheet ol::before{display:none}
+.efn .sheet li a{height:auto;min-height:48px;padding:10px 10px;white-space:normal;font-size:16px;line-height:1.35;color:rgba(255,253,246,.8);border-bottom:1px solid rgba(255,253,246,.06);border-radius:0}
+.efn .sheet li a span{opacity:1}
+.efn .sheet li a b{flex:none;width:26px;font-size:12px;color:var(--m);font-weight:700}
+.efn .sheet li a.cur{color:var(--gold);background:rgba(205,166,79,.07);border-radius:10px}
+.efn .sheet li a.cur b{color:var(--gold)}
+.efn .sheet li a i{display:none}
+@media (max-width:1279px){.efn .rail{display:none}.efn .fab{display:flex}}
+@media (prefers-reduced-motion:reduce){.efn *{transition:none!important}}
+</style>
+
+<div class="efn" id="efn">
+  <div class="rail"><div class="box"><div class="head"><b>≡</b><span>Содержание</span></div><ol></ol><div class="prog"><i></i></div></div></div>
+  <button class="fab" type="button" aria-label="Содержание страницы"><svg viewBox="0 0 36 36"><circle class="r1" cx="18" cy="18" r="15"/><circle class="r2" cx="18" cy="18" r="15" stroke-dasharray="94.25" stroke-dashoffset="94.25"/></svg>Содержание <em class="cnt"></em></button>
+  <div class="shade"></div>
+  <div class="sheet" role="dialog" aria-label="Содержание"><div class="grip"></div><h4>Содержание <button type="button" aria-label="Закрыть">×</button></h4><ol></ol></div>
+</div>
+
+<script>
+(function(){
+  var ITEMS=[];
+  var root=document.getElementById('efn');if(!root||root.dataset.init)return;root.dataset.init=1;
+  document.body.appendChild(root); /* выносим из блока Tilda, чтобы position:fixed работал всегда */
+
+  function heading(rec){ /* первый жирный крупный текст в блоке — к нему и прокручиваем */
+    var best=null;rec.querySelectorAll('.tn-elem[data-elem-type="text"] .tn-atom, h1, h2, h3').forEach(function(a){if(best)return;var c=getComputedStyle(a);if(parseFloat(c.fontSize)>=18&&+c.fontWeight>=600&&a.offsetHeight&&a.textContent.trim().length>3)best=a;});return best;}
+  function auto(){var out=[];document.querySelectorAll('.t-rec').forEach(function(r,i){if(!r.offsetHeight||r.querySelector('#efn'))return;var hd=heading(r);if(!hd)return;var y=hd.getBoundingClientRect().top-r.getBoundingClientRect().top;if(y>320)return;var t=hd.textContent.trim().replace(/\s+/g,' ');if(t.length>60)t=t.slice(0,57)+'…';out.push([t,r.id]);});out=out.slice(1);
+    if(out.length<2){out=[];var i=0;document.querySelectorAll('h2').forEach(function(h){if(h.closest('header,footer,.efm,.efn')||!h.offsetHeight)return;if(!h.id)h.id='efn-'+(++i);var t=h.textContent.trim().replace(/\s+/g,' ');if(t.length>60)t=t.slice(0,57)+'…';out.push([t,h.id]);});}
+    return out;}
+
+  var list=[],links=[];
+  function build(){
+    var src=ITEMS.length?ITEMS:auto();
+    list=src.map(function(x){var el=document.getElementById(x[1]);return el?{t:x[0],el:el}:null;}).filter(Boolean);
+    if(list.length<2){root.style.display='none';return false;}
+    root.querySelectorAll('ol').forEach(function(ol){ol.innerHTML='';list.forEach(function(x,i){var li=document.createElement('li'),a=document.createElement('a');a.href='#'+x.el.id;a.innerHTML='<i></i><b>'+String(i+1).padStart(2,'0')+'</b><span></span>';a.querySelector('span').textContent=x.t;a.title=x.t;
+      a.addEventListener('click',function(e){e.preventDefault();go(x);close();});li.appendChild(a);ol.appendChild(li);links.push(a);});});
+    return true;}
+
+  function target(x){var hd=heading(x.el),y=(hd||x.el).getBoundingClientRect().top+scrollY;return y;}
+  function hdr(){var h=document.querySelector('.efm');if(h&&getComputedStyle(h).position==='fixed')return h.offsetHeight;var el=document.elementFromPoint(innerWidth/2,4),v=0;while(el&&el!==document.body){if(getComputedStyle(el).position==='fixed'){v=el.getBoundingClientRect().bottom;break;}el=el.parentElement;}return Math.max(0,v);}
+  function go(x){var y=target(x),down=y>scrollY;scrollTo({top:Math.max(0,y-(down?28:hdr()+24)),behavior:'smooth'});}
+
+  var fab=root.querySelector('.fab'),cnt=root.querySelector('.cnt'),ring=root.querySelector('.r2'),bar=root.querySelector('.prog i');
+  function open(){root.classList.add('sheet-open');var c=root.querySelector('.sheet a.cur');if(c)c.scrollIntoView({block:'center'});}
+  function close(){root.classList.remove('sheet-open');}
+  fab.addEventListener('click',open);root.querySelector('.shade').addEventListener('click',close);root.querySelector('.sheet h4 button').addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+
+  var tick=false;
+  function spy(){tick=false;if(!list.length)return;
+    var line=innerHeight*.35,cur=-1;
+    list.forEach(function(x,i){if(x.el.getBoundingClientRect().top<=line)cur=i;});
+    var first=list[0].el.getBoundingClientRect().top,last=list[list.length-1].el,end=last.getBoundingClientRect().bottom;
+    root.classList.toggle('on',first<innerHeight*.6&&end>innerHeight*.3&&!document.querySelector('.efm.mopen'));
+    var n=list.length;
+    links.forEach(function(a,i){var k=i%n;a.classList.toggle('cur',k===cur);a.classList.toggle('past',k<cur);});
+    var p=cur<0?0:(cur+1)/n;bar.style.width=(p*100)+'%';ring.style.strokeDashoffset=94.25*(1-p);cnt.textContent=(cur<0?0:cur+1)+'/'+n;}
+  function onS(){if(!tick){tick=true;requestAnimationFrame(spy);}}
+
+  function init(){if(!build())return;spy();addEventListener('scroll',onS,{passive:true});addEventListener('resize',onS);}
+  if(document.readyState==='complete')setTimeout(init,300);else addEventListener('load',function(){setTimeout(init,300);});
+})();
+</script>
+
+<div id="pv-note" style="position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:99990;display:flex;align-items:center;gap:12px;max-width:calc(100% - 24px);width:max-content;padding:10px 12px 10px 18px;border-radius:14px;background:rgba(27,28,37,.94);border:1px solid rgba(205,166,79,.55);box-shadow:0 12px 30px rgba(0,0,0,.45);font:500 13px/1.4 Manrope,Arial,sans-serif;color:#FFFDF6"><span style="width:8px;height:8px;border-radius:50%;background:#CDA64F;flex:none"></span><span>Превью шапки и навигации. Пункты «скоро» на сайте скрыты, пока страницы не опубликованы. Форма в превью заявки не отправляет.</span><button type="button" onclick="this.parentNode.remove()" aria-label="Закрыть" style="flex:none;width:28px;height:28px;border-radius:8px;border:0;background:rgba(255,253,246,.08);color:#FFFDF6;font-size:16px;cursor:pointer">×</button></div>
+</body></html>

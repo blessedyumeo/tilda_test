@@ -1,0 +1,134 @@
+<!-- EFIX · НАВИГАЦИЯ ПО СТРАНИЦЕ (содержание) — один блок T123 «HTML-код», ставится в любое место страницы (удобно — в самый конец).
+     Работает на страницах из Zero Block: прокручивает к блокам по их номерам (#rec…), подсвечивает текущий раздел.
+     Компьютер — узкая панель слева, раскрывается при наведении. Телефон — кнопка «Содержание» внизу слева.
+
+     Как настроить под страницу: заполните список ITEMS ниже — название раздела, номер блока и начало заголовка раздела на странице.
+     Если номер блока не найден (например, в копии страницы), раздел ищется по заголовку.
+     Номер блока: в редакторе Tilda → Настройки блока → внизу «ID блока» (rec123456789), или спросите у разработчика.
+     Если оставить список пустым ( ITEMS:[] ) — разделы соберутся автоматически по заголовкам Zero Block. -->
+<style>
+.efn{--t:#FFFDF6;--m:#8B8C88;--gold:#CDA64F;--teal:#65E8CC;--panel:rgba(30,32,42,.92);--line:rgba(255,253,246,.1);font-family:Manrope,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.efn *{box-sizing:border-box;margin:0;padding:0}
+.efn button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+/* компьютер */
+.efn .rail{position:fixed;left:14px;top:50%;z-index:9980;transform:translate(-24px,-50%);opacity:0;visibility:hidden;transition:opacity .35s,transform .35s,visibility .35s}
+.efn.on .rail{opacity:1;visibility:visible;transform:translate(0,-50%)}
+.efn .box{position:relative;padding:14px 10px;border-radius:18px;background:var(--panel);border:1px solid var(--line);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 18px 40px -18px rgba(0,0,0,.7);width:44px;overflow:hidden;transition:width .3s cubic-bezier(.2,.7,.2,1)}
+.efn .rail:hover .box,.efn .rail:focus-within .box{width:330px}
+.efn .head{display:flex;align-items:center;gap:10px;height:22px;margin:0 0 8px 4px;white-space:nowrap;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--m)}
+.efn .head b{flex:none;display:grid;place-items:center;width:16px;font-size:11px;color:var(--gold);letter-spacing:0}
+.efn ol{list-style:none;position:relative}
+.efn ol::before{content:"";position:absolute;left:11px;top:10px;bottom:10px;width:1px;background:rgba(255,253,246,.12)}
+.efn li a{position:relative;display:flex;align-items:center;gap:14px;height:30px;padding:0 6px 0 4px;border-radius:9px;color:rgba(255,253,246,.62);font-size:14px;font-weight:500;white-space:nowrap;text-decoration:none;transition:color .2s,background .2s}
+.efn li a i{flex:none;position:relative;z-index:1;width:16px;height:16px;display:grid;place-items:center}
+.efn li a i::before{content:"";width:7px;height:7px;border-radius:50%;background:rgba(255,253,246,.35);transition:all .25s}
+.efn .rail li a b{display:none}
+.efn li a span{overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .2s}
+.efn .rail:hover li a span,.efn .rail:focus-within li a span,.efn .rail:hover .head span{opacity:1}
+.efn .head span{opacity:0;transition:opacity .2s}
+.efn li a:hover{color:var(--t);background:rgba(255,253,246,.05)}
+.efn li a.past i::before{background:rgba(101,232,204,.55)}
+.efn li a.cur{color:var(--t)}
+.efn li a.cur i::before{width:6px;height:16px;border-radius:4px;background:var(--gold);box-shadow:0 0 12px rgba(205,166,79,.6)}
+.efn .prog{margin:10px 4px 0;height:3px;border-radius:3px;background:rgba(255,253,246,.1);overflow:hidden}
+.efn .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),#E9C77C);transition:width .2s}
+/* телефон */
+.efn .fab{position:fixed;left:14px;bottom:16px;z-index:9980;display:none;align-items:center;gap:10px;height:46px;padding:0 16px 0 8px;border-radius:30px;background:var(--panel);border:1px solid var(--line);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 14px 30px -12px rgba(0,0,0,.7);color:var(--t);font-size:14px;font-weight:600;opacity:0;transform:translateY(20px);pointer-events:none;transition:opacity .3s,transform .3s}
+.efn.on .fab{opacity:1;transform:none;pointer-events:auto}
+.efn .fab svg{flex:none;width:30px;height:30px;transform:rotate(-90deg)}
+.efn .fab .r1{fill:none;stroke:rgba(255,253,246,.15);stroke-width:3}
+.efn .fab .r2{fill:none;stroke:var(--gold);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .2s}
+.efn .fab em{font-style:normal;color:var(--m);font-weight:500}
+.efn .sheet{position:fixed;left:0;right:0;bottom:0;z-index:9995;max-height:78vh;display:flex;flex-direction:column;padding:10px 16px 20px;border-radius:22px 22px 0 0;background:#1E2029;border-top:1px solid var(--line);box-shadow:0 -20px 50px rgba(0,0,0,.5);transform:translateY(105%);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.efn.sheet-open .sheet{transform:none}
+.efn .shade{position:fixed;inset:0;z-index:9994;background:rgba(0,0,0,.5);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.efn.sheet-open .shade{opacity:1;visibility:visible}
+.efn .grip{width:40px;height:4px;border-radius:4px;background:rgba(255,253,246,.25);margin:0 auto 12px}
+.efn .sheet h4{display:flex;justify-content:space-between;align-items:center;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--m);margin:0 4px 8px}
+.efn .sheet h4 button{width:34px;height:34px;border-radius:50%;background:rgba(255,253,246,.06);font-size:18px;color:var(--t)}
+.efn .sheet ol{overflow-y:auto;-webkit-overflow-scrolling:touch}
+.efn .sheet ol::before{display:none}
+.efn .sheet li a{height:auto;min-height:48px;padding:10px 10px;white-space:normal;font-size:16px;line-height:1.35;color:rgba(255,253,246,.8);border-bottom:1px solid rgba(255,253,246,.06);border-radius:0}
+.efn .sheet li a span{opacity:1}
+.efn .sheet li a b{flex:none;width:26px;font-size:12px;color:var(--m);font-weight:700}
+.efn .sheet li a.cur{color:var(--gold);background:rgba(205,166,79,.07);border-radius:10px}
+.efn .sheet li a.cur b{color:var(--gold)}
+.efn .sheet li a i{display:none}
+@media (max-width:1279px){.efn .rail{display:none}.efn .fab{display:flex}}
+@media (prefers-reduced-motion:reduce){.efn *{transition:none!important}}
+</style>
+
+<div class="efn" id="efn">
+  <div class="rail"><div class="box"><div class="head"><b>≡</b><span>Содержание</span></div><ol></ol><div class="prog"><i></i></div></div></div>
+  <button class="fab" type="button" aria-label="Содержание страницы"><svg viewBox="0 0 36 36"><circle class="r1" cx="18" cy="18" r="15"/><circle class="r2" cx="18" cy="18" r="15" stroke-dasharray="94.25" stroke-dashoffset="94.25"/></svg>Содержание <em class="cnt"></em></button>
+  <div class="shade"></div>
+  <div class="sheet" role="dialog" aria-label="Содержание"><div class="grip"></div><h4>Содержание <button type="button" aria-label="Закрыть">×</button></h4><ol></ol></div>
+</div>
+
+<script>
+(function(){
+  /* [название в меню, номер блока, начало заголовка на странице] — если номера блока нет (например, в копии страницы), раздел ищется по заголовку */
+  var ITEMS=[
+    ['Почему FZ Аджман','rec2310788201','Почему стоит выбрать FZ Аджман'],
+    ['Пакеты и стоимость','rec2310788231','Пакеты и стоимость'],
+    ['Юридические структуры','rec2310788291','Юридические структуры'],
+    ['Как мы регистрируем компанию','rec2310788321','Как мы регистрируем'],
+    ['Подходит ли Аджман вашему бизнесу','rec2310788331','Подходит ли свободная'],
+    ['Документы','rec2310788351','Документы, которые'],
+    ['Офисы и склады','rec2310788361','Варианты офисов'],
+    ['Налоговые условия','rec2310788371','Налоговые условия'],
+    ['Продление, изменения и закрытие','rec2310788381','Продление лицензии'],
+    ['Почему EFIX GRP','rec2310788391','Почему стоит выбрать EFIX'],
+    ['Отзывы клиентов','rec2310788401','Что говорят наши клиенты'],
+    ['Бесплатная консультация','rec2310788431','Получите'],
+    ['Частые вопросы','rec2310788441','Часто задаваемые вопросы']
+  ];
+  /* ТЕСТОВЫЙ РЕЖИМ: true — навигацию видно только по ссылке с ?navtest в конце (посетители её не видят).
+     Когда заказчик одобрит — поставьте false и опубликуйте страницу ещё раз. */
+  var TEST_ONLY=false;
+  if(TEST_ONLY&&!/[?&#]navtest/.test(location.search+location.hash)){var e0=document.getElementById('efn');if(e0)e0.style.display='none';return;}
+  var root=document.getElementById('efn');if(!root||root.dataset.init)return;root.dataset.init=1;
+  document.body.appendChild(root); /* выносим из блока Tilda, чтобы position:fixed работал всегда */
+
+  function heading(rec){ /* первый жирный крупный текст в блоке — к нему и прокручиваем */
+    var best=null;rec.querySelectorAll('.tn-elem[data-elem-type="text"] .tn-atom, h1, h2, h3').forEach(function(a){if(best)return;var c=getComputedStyle(a);if(parseFloat(c.fontSize)>=18&&+c.fontWeight>=600&&a.offsetHeight&&a.textContent.trim().length>3)best=a;});return best;}
+  function auto(){var out=[];document.querySelectorAll('.t-rec').forEach(function(r,i){if(!r.offsetHeight||r.querySelector('#efn'))return;var hd=heading(r);if(!hd)return;var y=hd.getBoundingClientRect().top-r.getBoundingClientRect().top;if(y>320)return;var t=hd.textContent.trim().replace(/\s+/g,' ');if(t.length>60)t=t.slice(0,57)+'…';out.push([t,r.id]);});out=out.slice(1);
+    if(out.length<2){out=[];var i=0;document.querySelectorAll('h2').forEach(function(h){if(h.closest('header,footer,.efm,.efn')||!h.offsetHeight)return;if(!h.id)h.id='efn-'+(++i);var t=h.textContent.trim().replace(/\s+/g,' ');if(t.length>60)t=t.slice(0,57)+'…';out.push([t,h.id]);});}
+    return out;}
+
+  var list=[],links=[];
+  function build(){
+    var src=ITEMS.length?ITEMS:auto();
+    var norm=function(t){return (t||'').replace(/\s+/g,' ').trim().toLowerCase();};
+    function byText(q){q=norm(q);if(!q)return null;var recs=document.querySelectorAll('.t-rec');for(var i=0;i<recs.length;i++){var r=recs[i];if(!r.offsetHeight)continue;var at=r.querySelectorAll('.tn-elem[data-elem-type="text"] .tn-atom, h1, h2, h3');for(var j=0;j<at.length;j++){if(norm(at[j].textContent).indexOf(q)===0)return r;}}return null;}
+    list=src.map(function(x){var el=document.getElementById(x[1]);if(!el||!el.offsetHeight)el=byText(x[2]);return el?{t:x[0],el:el}:null;}).filter(Boolean);
+    if(list.length<2){root.style.display='none';return false;}
+    root.querySelectorAll('ol').forEach(function(ol){ol.innerHTML='';list.forEach(function(x,i){var li=document.createElement('li'),a=document.createElement('a');a.href='#'+x.el.id;a.innerHTML='<i></i><b>'+String(i+1).padStart(2,'0')+'</b><span></span>';a.querySelector('span').textContent=x.t;a.title=x.t;
+      a.addEventListener('click',function(e){e.preventDefault();go(x);close();});li.appendChild(a);ol.appendChild(li);links.push(a);});});
+    return true;}
+
+  function target(x){var hd=heading(x.el),y=(hd||x.el).getBoundingClientRect().top+scrollY;return y;}
+  function hdr(){var h=document.querySelector('.efm');if(h&&getComputedStyle(h).position==='fixed')return h.offsetHeight;var el=document.elementFromPoint(innerWidth/2,4),v=0;while(el&&el!==document.body){if(getComputedStyle(el).position==='fixed'){v=el.getBoundingClientRect().bottom;break;}el=el.parentElement;}return Math.max(0,v);}
+  function go(x){var y=target(x),down=y>scrollY;scrollTo({top:Math.max(0,y-(down?28:hdr()+24)),behavior:'smooth'});}
+
+  var fab=root.querySelector('.fab'),cnt=root.querySelector('.cnt'),ring=root.querySelector('.r2'),bar=root.querySelector('.prog i');
+  function open(){root.classList.add('sheet-open');var c=root.querySelector('.sheet a.cur');if(c)c.scrollIntoView({block:'center'});}
+  function close(){root.classList.remove('sheet-open');}
+  fab.addEventListener('click',open);root.querySelector('.shade').addEventListener('click',close);root.querySelector('.sheet h4 button').addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+
+  var tick=false;
+  function spy(){tick=false;if(!list.length)return;
+    var line=innerHeight*.35,cur=-1;
+    list.forEach(function(x,i){if(x.el.getBoundingClientRect().top<=line)cur=i;});
+    var first=list[0].el.getBoundingClientRect().top,last=list[list.length-1].el,end=last.getBoundingClientRect().bottom;
+    root.classList.toggle('on',first<innerHeight*.6&&end>innerHeight*.3&&!document.querySelector('.efm.mopen'));
+    var n=list.length;
+    links.forEach(function(a,i){var k=i%n;a.classList.toggle('cur',k===cur);a.classList.toggle('past',k<cur);});
+    var p=cur<0?0:(cur+1)/n;bar.style.width=(p*100)+'%';ring.style.strokeDashoffset=94.25*(1-p);cnt.textContent=(cur<0?0:cur+1)+'/'+n;}
+  function onS(){if(!tick){tick=true;requestAnimationFrame(spy);}}
+
+  function init(){if(!build())return;spy();addEventListener('scroll',onS,{passive:true});addEventListener('resize',onS);}
+  if(document.readyState==='complete')setTimeout(init,300);else addEventListener('load',function(){setTimeout(init,300);});
+})();
+</script>
