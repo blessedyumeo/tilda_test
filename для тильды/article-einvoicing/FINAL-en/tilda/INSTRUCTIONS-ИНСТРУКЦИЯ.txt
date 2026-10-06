@@ -1,0 +1,20 @@
+СТАТЬЯ eInvoicing (EN) — ВЕРСИЯ ДЛЯ TILDA (английский сайт, https://efix-grp.ae/electronic_invoicing)
+
+Блоки (каждый — отдельный блок T123 «HTML-код», по порядку):
+ 1. 01-header-en.html  — шапка (если на странице уже стоит общая шапка сайта — не ставить)
+ 2. 02-article-en.html — статья (внизу 5 статей «Other publications»)
+ 3. 03-footer-en.html  — подвал (если уже стоит общий подвал — не ставить)
+
+Кнопки в статье («Check readiness», «Get an assessment», «Contact EFIX GRP») открывают попап-форму
+английского сайта #popup:projecteng1 — она должна быть на странице.
+
+Настройки страницы в Tilda:
+ — Заголовок (title): eInvoicing in the UAE: 2026–2027 Deadlines, Requirements and Penalties | EFIX GRP
+ — Описание: eInvoicing in the UAE: who it applies to, 2026–2027 deadlines, ASP, Peppol, penalties and accounting preparation. A practical guide by EFIX GRP.
+ — Адрес страницы: electronic_invoicing
+ — Индексирование: разрешено (без noindex/nofollow).
+
+Проверить перед публикацией:
+ — datePublished в микроразметке = 2026-03-23 (дата старой английской статьи — сверить в админке);
+ — ссылки «Other publications»: /uae_resident и /business_in_the_uae — открываются ли на английском сайте.
+После публикации: нажать кнопку в статье (открывается ли форма), проверить https://validator.schema.org.

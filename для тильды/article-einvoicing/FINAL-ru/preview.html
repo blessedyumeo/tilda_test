@@ -373,15 +373,6 @@
 .efa .src a:hover{background:#fff;border-color:#C9D3F8}
 .efa .disc{margin-top:22px;font-size:14px;line-height:1.6;color:var(--mut)}
 
-.efa .more{padding:60px 0 70px;border-top:1px solid var(--line);margin-top:30px}
-.efa .more h2{text-align:center;font-weight:300;font-size:36px;margin-bottom:34px}
-.efa .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-.efa .post{display:flex;flex-direction:column;border-radius:20px;background:#fff;border:1px solid var(--line);overflow:hidden;transition:transform .3s,box-shadow .3s}
-.efa .post:hover{transform:translateY(-6px);box-shadow:0 24px 40px -26px rgba(12,14,90,.45)}
-.efa .post .pic{aspect-ratio:16/10;background:var(--soft);display:grid;place-items:center;padding:18px}
-.efa .post .pic img{max-height:100%;width:auto;object-fit:contain;transition:transform .4s}
-.efa .post:hover .pic img{transform:scale(1.05)}
-.efa .post span{padding:16px 20px 20px;font-size:16.5px;font-weight:600;line-height:1.4;color:var(--ink)}
 
 .efa-ready .efa [data-r]{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
 .efa-ready .efa [data-r].in{opacity:1;transform:none}
@@ -401,7 +392,7 @@
   .efa .head{padding-top:40px}
   .efa .ill{width:100%;margin:14px 0 0}
   .efa h1{font-size:34px}
-  .efa .dates,.efa .cards,.efa .ways,.efa .grid{grid-template-columns:1fr 1fr}
+  .efa .dates,.efa .cards,.efa .ways{grid-template-columns:1fr 1fr}
   .efa .flow-row{grid-template-columns:1fr;gap:6px}
   .efa .flow-row::before{left:35px;right:auto;top:30px;bottom:30px;width:2px;height:auto;background:repeating-linear-gradient(180deg,var(--blue3) 0 8px,transparent 8px 14px)}
   .efa .pkt{display:none}
@@ -419,7 +410,7 @@
   .efa h2{font-size:24px}
   .efa h2 .n{width:34px;height:34px;font-size:13px;vertical-align:3px;margin-right:8px}
   .efa .lead{font-size:17px}
-  .efa .dates,.efa .cards,.efa .ways,.efa .grid,.efa .res,.efa .two{grid-template-columns:1fr}
+  .efa .dates,.efa .cards,.efa .ways,.efa .res,.efa .two{grid-template-columns:1fr}
   .efa .tldr{padding:76px 20px 22px}
   .efa .tldr::before{left:20px;top:20px}
   .efa .vs{grid-template-columns:1fr}
@@ -442,12 +433,21 @@
   .efa .tbl td{border:0;padding:8px 16px;background:#fff!important}
   .efa .tbl td:first-child{background:var(--soft)!important;padding:12px 16px}
   .efa .tbl td[data-l]::before{content:attr(data-l);display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600}
-  .efa .more h2{font-size:28px}
 }
 @media (prefers-reduced-motion:reduce){
   .efa *,.efa *::before,.efa *::after{animation:none!important;transition:none!important}
   .efa-ready .efa [data-r]{opacity:1;transform:none}
 }
+.efa .rel{padding:16px 0 40px}
+.efa .rel-h{position:relative;width:min(940px,calc(100% - 40px));margin:0 auto;height:50px;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);display:grid;place-items:center}
+.efa .rel-h h2{margin:0;font-size:28px;line-height:43px;font-weight:500;color:var(--ink);text-align:center}
+.efa .rel-g{display:grid;grid-template-columns:repeat(5,160px);justify-content:center;gap:24px 40px;margin-top:44px;padding:0 20px}
+.efa .rel-g a{display:block;text-align:center;color:var(--ink)}
+.efa .rel-g i{display:block;height:104px;background:center/contain no-repeat;transition:transform .3s}
+.efa .rel-g a:hover i{transform:translateY(-4px)}
+.efa .rel-g span{display:block;margin-top:6px;font-size:18px;font-weight:500;line-height:1.22;color:var(--ink)}
+@media (max-width:960px){.efa .rel-g{grid-template-columns:repeat(3,160px)}}
+@media (max-width:640px){.efa .rel-g{grid-template-columns:repeat(2,minmax(0,235px));gap:28px 20px}.efa .rel-g i{height:120px}.efa .rel-h h2{font-size:24px}}
 </style>
 
 <div class="efa" id="efa">
@@ -494,7 +494,7 @@
       <nav class="toc" aria-label="Содержание">
         <div class="tt">Содержание</div>
         <ol></ol>
-        <a class="cta-mini" href="#quote">Оценить готовность</a>
+        <a class="cta-mini" href="#popup:projectrus1">Оценить готовность</a>
       </nav>
     </aside>
 
@@ -713,7 +713,7 @@
           <div class="box">
             <div><div class="tt">Подготовка к eInvoicing с EFIX GRP</div><p>Если вы хотите понять, когда именно ваша компания обязана перейти на eInvoicing и готова ли текущая бухгалтерская система к интеграции, EFIX GRP может провести предварительную оценку и подготовить пошаговый план перехода.</p></div>
             <div class="btns">
-              <a class="btn pri" href="#quote">Получить оценку</a>
+              <a class="btn pri" href="#popup:projectrus1">Получить оценку</a>
               <a class="btn sec" href="https://wa.me/971585278077" target="_blank" rel="noopener"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt="">WhatsApp</a>
             </div>
           </div>
@@ -743,7 +743,7 @@
           <p>Компании, которые заранее приведут в порядок справочные данные и процессы выставления счетов, смогут перейти на новую систему значительно спокойнее и снизить риск технических ошибок, отклонённых документов и штрафов после обязательного запуска.</p>
           <div class="final">
             <div><b>Нужна оценка готовности вашей компании к eInvoicing?</b><p>Свяжитесь с EFIX GRP — проверим текущую бухгалтерскую систему, процессы и подготовим план перехода.</p></div>
-            <a class="btn pri" href="#quote">Связаться с EFIX GRP</a>
+            <a class="btn pri" href="#popup:projectrus1">Связаться с EFIX GRP</a>
           </div>
         </div>
       </section>
@@ -765,16 +765,16 @@
     </article>
   </div>
 
-  <div class="more">
-    <div class="wrap">
-      <h2 data-r>Другие статьи</h2>
-      <div class="grid">
-        <a class="post" href="https://efix-grp.ae/ru/professional_licenses" data-r><div class="pic"><img loading="lazy" src="https://static.tildacdn.com/tild3330-3565-4663-a437-663862373331/img234.png" alt=""></div><span>Профессиональные лицензии в Дубае</span></a>
-        <a class="post" href="https://efix-grp.ae/ru/trademark_registration" data-r><div class="pic"><img loading="lazy" src="https://static.tildacdn.com/tild6538-6332-4861-a136-613361613538/img.svg" alt=""></div><span>Регистрация товарного знака в ОАЭ</span></a>
-        <a class="post" href="https://efix-grp.ae/ru/utomation_of_hr_recruitment" data-r><div class="pic"><img loading="lazy" src="https://static.tildacdn.com/tild3532-3438-4431-b938-623937316434/img22.png" alt=""></div><span>Автоматизация подбора персонала HR</span></a>
+  <section class="rel">
+      <div class="rel-h"><h2>Другие статьи</h2></div>
+      <div class="rel-g">
+        <a href="https://efix-grp.ae/ru/professional_licenses"><i style="background-image:url(https://static.tildacdn.com/tild3330-3565-4663-a437-663862373331/img234.png)"></i><span>Профессиональные лицензии в Дубае</span></a>
+        <a href="https://efix-grp.ae/ru/trademark_registration"><i style="background-image:url(https://static.tildacdn.com/tild6538-6332-4861-a136-613361613538/img.svg)"></i><span>Регистрация товарного знака в ОАЭ</span></a>
+        <a href="https://efix-grp.ae/ru/utomation_of_hr_recruitment"><i style="background-image:url(https://static.tildacdn.com/tild3532-3438-4431-b938-623937316434/img22.png)"></i><span>Автоматизация подбора персонала HR</span></a>
+        <a href="https://efix-grp.ae/ru/uae_resident"><i style="background-image:url(https://static.tildacdn.com/tild3363-3930-4532-a534-633436656338/__1_1.png)"></i><span>Как стать резидентом ОАЭ</span></a>
+        <a href="https://efix-grp.ae/ru/business_in_the_uae"><i style="background-image:url(https://static.tildacdn.com/tild3532-6234-4566-b261-616538383435/MacBook_Air_-_1.png)"></i><span>Бизнес в ОАЭ</span></a>
       </div>
-    </div>
-  </div>
+  </section>
 </div>
 
 <script type="application/ld+json">
