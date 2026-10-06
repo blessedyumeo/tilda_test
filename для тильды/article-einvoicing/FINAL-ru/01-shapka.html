@@ -1,0 +1,102 @@
+<style>
+.efx-hdr-space{height:98px}
+@media (max-width:1100px){.efx-hdr-space{height:70px}}
+.efx-hdr{--t:#FFFDF6;--m:#8B8C88;--gold:#CDA64F;--teal:#65E8CC;position:fixed;top:0;left:0;right:0;z-index:9990;font-family:Manrope,Arial,sans-serif;background:rgba(27,28,37,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,253,246,.07);transition:background .3s}
+.efx-hdr{background:#181922}
+.efx-hdr *{box-sizing:border-box;margin:0;padding:0}
+.efx-hdr a{color:inherit;text-decoration:none}
+.efx-hdr .bar{position:absolute;left:0;top:0;height:3px;width:0;background:linear-gradient(90deg,var(--gold),#E9C77C);transition:width .1s linear}
+.efx-hdr .top{max-width:1240px;margin:0 auto;padding:8px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:13px;color:var(--m)}
+.efx-hdr .top .soc{display:flex;gap:10px;align-items:center}
+.efx-hdr .top .soc img{width:16px;height:16px;opacity:.7;transition:opacity .2s,transform .2s}
+.efx-hdr .top .soc a:hover img{opacity:1;transform:translateY(-1px)}
+.efx-hdr .top a:hover{color:var(--t)}
+.efx-hdr .lang{padding:2px 8px;border:1px solid rgba(255,253,246,.2);border-radius:8px;font-weight:600}
+.efx-hdr .row{max-width:1240px;margin:0 auto;padding:12px 20px 14px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.efx-hdr .logo img{height:42px;width:auto;display:block}
+.efx-hdr nav{display:flex;align-items:center;gap:4px}
+.efx-hdr .it{position:relative}
+.efx-hdr .it > a{display:flex;align-items:center;gap:6px;padding:10px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--m);transition:color .2s,background .2s}
+.efx-hdr .it > a:hover,.efx-hdr .it:focus-within > a{color:var(--t);background:rgba(255,253,246,.05)}
+.efx-hdr .it.cur > a{color:var(--t)}
+.efx-hdr .it.cur > a::before{content:"";position:absolute;left:12px;right:12px;bottom:3px;height:2px;border-radius:2px;background:var(--teal)}
+.efx-hdr .dd > a::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);margin-left:2px}
+.efx-hdr .sub{position:absolute;top:100%;left:0;min-width:280px;padding:8px;border-radius:16px;background:#23252E;border:1px solid #38393C;box-shadow:0 20px 40px -12px rgba(0,0,0,.6);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s,transform .2s,visibility .2s}
+.efx-hdr .it:hover .sub,.efx-hdr .it:focus-within .sub{opacity:1;visibility:visible;transform:none}
+.efx-hdr .sub a{display:block;padding:10px 12px;border-radius:10px;font-size:14px;color:rgba(255,253,246,.8)}
+.efx-hdr .sub a:hover{background:rgba(101,232,204,.1);color:var(--t)}
+.efx-hdr .burger{display:none;width:44px;height:44px;border:0;background:none;cursor:pointer;position:relative}
+.efx-hdr .burger span,.efx-hdr .burger::before,.efx-hdr .burger::after{content:"";position:absolute;left:10px;right:10px;height:2px;border-radius:2px;background:var(--t);transition:transform .3s,opacity .3s}
+.efx-hdr .burger::before{top:14px}.efx-hdr .burger span{top:21px}.efx-hdr .burger::after{top:28px}
+.efx-hdr.open .burger::before{transform:translateY(7px) rotate(45deg)}
+.efx-hdr.open .burger span{opacity:0}
+.efx-hdr.open .burger::after{transform:translateY(-7px) rotate(-45deg)}
+@media (max-width:1100px){
+  .efx-hdr .top{display:none}
+  .efx-hdr .burger{display:block}
+  .efx-hdr nav{position:absolute;left:0;right:0;top:100%;height:calc(100vh - 70px);height:calc(100dvh - 70px);flex-direction:column;align-items:stretch;gap:0;padding:12px 20px 40px;background:#1B1C25;overflow:auto;opacity:0;visibility:hidden;transform:translateY(-10px);transition:opacity .25s,transform .25s,visibility .25s}
+  .efx-hdr.open nav{opacity:1;visibility:visible;transform:none}
+  .efx-hdr .it > a{font-size:18px;padding:14px 4px;border-bottom:1px solid rgba(255,253,246,.07);border-radius:0;color:var(--t)}
+  .efx-hdr .it.cur > a::before{display:none}
+  .efx-hdr .dd > a::after{display:none}
+  .efx-hdr .sub{position:static;opacity:1;visibility:visible;transform:none;background:none;border:0;box-shadow:none;padding:4px 0 8px 12px;min-width:0}
+  .efx-hdr .sub a{font-size:15px;color:var(--m)}
+  .efx-hdr .mob-soc{display:flex!important;gap:14px;margin-top:24px}
+  .efx-hdr .mob-soc img{width:26px;height:26px}
+  .efx-hdr .mob-ct{display:block!important;margin-top:18px;color:var(--m);font-size:15px;line-height:1.8}
+}
+.efx-hdr .mob-soc,.efx-hdr .mob-ct{display:none}
+</style>
+<div class="efx-hdr-space" id="efx-hdr-space"></div>
+<header class="efx-hdr" id="efx-hdr">
+  <div class="bar"></div>
+  <div class="top">
+    <a href="mailto:hello@efix-grp.ae">hello@efix-grp.ae</a>
+    <a href="tel:+971585278077">+971 58 5278077</a>
+    <div class="soc">
+      <a href="https://wa.me/971585278077" target="_blank" rel="noopener" aria-label="WhatsApp"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt=""></a>
+      <a href="https://instagram.com/efix_grp" target="_blank" rel="noopener" aria-label="Instagram"><img src="https://static.tildacdn.com/tild3237-6338-4735-a432-623535373363/free-icon-instagram-.svg" alt=""></a>
+      <a href="https://www.facebook.com/efixgroup" target="_blank" rel="noopener" aria-label="Facebook"><img src="https://static.tildacdn.com/tild6333-6464-4563-a163-383032326463/free-icon-facebook-1.svg" alt=""></a>
+      <a href="https://t.me/efix_grp" target="_blank" rel="noopener" aria-label="Telegram"><img src="https://static.tildacdn.com/tild6136-3365-4130-a336-373630316562/telegram_1.svg" alt=""></a>
+      <a href="https://youtube.com/@efix_grp" target="_blank" rel="noopener" aria-label="YouTube"><img src="https://static.tildacdn.com/tild3033-3237-4564-b637-366136313164/YouTube.svg" alt=""></a>
+    </div>
+    <a class="lang" href="https://efix-grp.ae/">EN</a>
+  </div>
+  <div class="row">
+    <a class="logo" href="https://efix-grp.ae/ru" aria-label="EFIX GRP"><img src="https://static.tildacdn.com/tild3137-6236-4166-b065-363935663233/Group_41.svg" alt="EFIX GRP"></a>
+    <nav>
+      <div class="it"><a href="https://efix-grp.ae/ru">О нас</a></div>
+      <div class="it"><a href="https://efix-grp.ae/ru/accounting">Бухгалтерия и кадры</a></div>
+      <div class="it dd"><a href="https://efix-grp.ae/ru/recruitment">Рекрутмент</a>
+        <div class="sub"><a href="https://efix-grp.ae/ru/recruitment">Рекрутмент</a><a href="https://efix-grp.ae/applying_visa_uae">Оформление визы в ОАЭ</a></div></div>
+      <div class="it dd"><a href="https://efix-grp.ae/ru/tax_consulting_vat">Консалтинг</a>
+        <div class="sub"><a href="https://efix-grp.ae/ru/tax_consulting_vat">Налоговый консалтинг по VAT</a><a href="https://efix-grp.ae/ru/tax_consulting_cpt">Налоговый консалтинг по CPT</a></div></div>
+      <div class="it dd"><a href="https://efix-grp.ae/company_registration_in_uae_mainland">Регистрация компании в ОАЭ</a>
+        <div class="sub"><a href="https://efix-grp.ae/company_registration_in_uae_mainland">Регистрация компании в ОАЭ Mainland</a><a href="https://efix-grp.ae/company_registration_in_uae_maydan">Регистрация компании в ОАЭ Meydan</a><a href="https://efix-grp.ae/ru/ajman_free_zone_business_setup">Свободная зона Аджман</a><a href="https://efix-grp.ae/ru/dmcc-company-setup">Свободная зона DMCC</a></div></div>
+      <div class="it cur"><a href="https://efix-grp.ae/ru/publications">Публикации</a></div>
+      <div class="mob-ct"><a href="mailto:hello@efix-grp.ae">hello@efix-grp.ae</a><br><a href="tel:+971585278077">+971 58 5278077</a></div>
+      <div class="mob-soc">
+        <a href="https://wa.me/971585278077" aria-label="WhatsApp"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt=""></a>
+        <a href="https://t.me/efix_grp" aria-label="Telegram"><img src="https://static.tildacdn.com/tild6136-3365-4130-a336-373630316562/telegram_1.svg" alt=""></a>
+        <a href="https://instagram.com/efix_grp" aria-label="Instagram"><img src="https://static.tildacdn.com/tild3237-6338-4735-a432-623535373363/free-icon-instagram-.svg" alt=""></a>
+        <a href="https://youtube.com/@efix_grp" aria-label="YouTube"><img src="https://static.tildacdn.com/tild3033-3237-4564-b637-366136313164/YouTube.svg" alt=""></a>
+      </div>
+    </nav>
+    <button class="burger" type="button" aria-label="Меню"><span></span></button>
+  </div>
+</header>
+<script>
+(function(){
+  var h=document.getElementById('efx-hdr');if(!h)return;
+  var bar=h.querySelector('.bar'),b=h.querySelector('.burger'),sp=document.getElementById('efx-hdr-space');
+
+  function fit(){if(sp)sp.style.height=h.offsetHeight+'px';}
+  window.addEventListener('resize',fit);window.addEventListener('load',fit);fit();
+
+  document.documentElement.style.scrollPaddingTop=(h.offsetHeight+10)+'px';
+  function prog(){var d=document.documentElement,max=d.scrollHeight-d.clientHeight;bar.style.width=(max>0?(d.scrollTop||document.body.scrollTop)/max*100:0)+'%';}
+  window.addEventListener('scroll',prog,{passive:true});prog();
+  b.addEventListener('click',function(){h.classList.toggle('open');document.body.style.overflow=h.classList.contains('open')?'hidden':'';});
+  h.querySelectorAll('nav a').forEach(function(a){a.addEventListener('click',function(){h.classList.remove('open');document.body.style.overflow='';});});
+})();
+</script>
