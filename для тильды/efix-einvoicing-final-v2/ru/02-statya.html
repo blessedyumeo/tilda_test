@@ -1,0 +1,756 @@
+<style>
+.efa{--ink:#0C0E5A;--txt:#2B2E57;--mut:#8B8C88;--blue:#4E6CE3;--blue2:#4A66D7;--blue3:#6985EF;--soft:#F8F8FB;--soft2:#EEF1FC;--line:#E4E6F0;--dark:#181922;--gold:#CDA64F;--red:#F95D51;--orange:#F69A38;--green:#3FB27F;
+  font-family:Manrope,Arial,sans-serif;color:var(--txt);background:#fff;font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:clip}
+.efa *{box-sizing:border-box;margin:0;padding:0}
+.efa a{color:var(--blue);text-decoration:none}
+.efa img{max-width:100%;display:block}
+.efa .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+
+.efa .crumbs-band{position:relative;background:var(--dark);color:#FFFDF6;overflow:hidden}
+.efa .crumbs-band::before{content:"";position:absolute;right:-120px;top:-160px;width:560px;height:360px;background:radial-gradient(closest-side,rgba(78,108,227,.35),transparent);pointer-events:none}
+.efa .crumbs{position:relative;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:34px 0 30px;font-size:15px;color:rgba(255,253,246,.75)}
+.efa .crumbs a{color:rgba(255,253,246,.75);transition:color .2s}
+.efa .crumbs a:hover{color:#fff}
+.efa .crumbs i{font-style:normal;opacity:.5}
+.efa .crumbs span{color:#FFFDF6}
+
+.efa .head{position:relative;padding:60px 0 20px}
+.efa .tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.efa .tag{font-size:13px;font-weight:600;letter-spacing:.04em;padding:6px 12px;border-radius:30px;background:var(--soft2);color:var(--blue2)}
+.efa .tag.gold{background:rgba(205,166,79,.14);color:#9A7A2F}
+.efa h1{max-width:1080px;font-size:48px;line-height:1.25;font-weight:700;text-transform:uppercase;color:var(--ink);letter-spacing:.01em}
+.efa h1 em{font-style:normal;color:var(--blue)}
+.efa .meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:22px;font-size:14px;color:var(--mut)}
+.efa .meta b{color:var(--ink);font-weight:600}
+.efa .ill{position:relative;width:min(960px,80%);margin:-6px 0 0 auto}
+.efa .ill::before{content:"";position:absolute;inset:10% 12% 0;background:radial-gradient(closest-side,rgba(105,133,239,.22),transparent);z-index:0}
+.efa .ill img{position:relative;width:100%;animation:efaFloat 6s ease-in-out infinite}
+@keyframes efaFloat{50%{transform:translateY(-12px)}}
+
+.efa .lead{max-width:860px;font-size:19px;line-height:1.7;color:var(--txt)}
+.efa .lead p+p{margin-top:14px}
+
+.efa .dates{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:34px 0 0}
+.efa .date{position:relative;padding:22px 22px 20px;border-radius:18px;background:var(--soft);border:1px solid var(--line);overflow:hidden}
+.efa .date::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue)}
+.efa .date.hot::after{background:var(--red)}
+.efa .date small{display:block;font-size:13px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
+.efa .date strong{display:block;font-size:26px;line-height:1.2;font-weight:800;color:var(--ink);margin:6px 0 6px}
+.efa .date span{font-size:15px;line-height:1.45;color:var(--txt)}
+
+.efa .tldr{position:relative;margin:28px 0 0;padding:28px 30px 28px 92px;border-radius:20px;background:linear-gradient(120deg,#20233A,#181922);color:#E9EAF3;overflow:hidden}
+.efa .tldr::before{content:"!";position:absolute;left:28px;top:28px;width:42px;height:42px;display:grid;place-items:center;font-weight:800;font-size:22px;color:#fff;background:var(--blue);border-radius:6px}
+.efa .tldr::after{content:"";position:absolute;right:-80px;bottom:-120px;width:340px;height:260px;background:radial-gradient(closest-side,rgba(78,108,227,.35),transparent)}
+.efa .tldr .tt{font-size:19px;font-weight:700;line-height:1.35;color:#fff;margin-bottom:8px}
+.efa .tldr p{position:relative;z-index:1;font-size:16.5px;line-height:1.65}
+.efa .tldr b{color:#9FB2FF}
+
+.efa .layout{display:grid;grid-template-columns:270px minmax(0,1fr);gap:56px;padding-top:56px;padding-bottom:40px}
+.efa aside{position:relative}
+.efa .toc{width:270px;padding:22px 20px;border-radius:18px;background:var(--soft);border:1px solid var(--line)}
+.efa .toc.fix{position:fixed;top:var(--efa-top,110px);transition:top .35s cubic-bezier(.2,.7,.2,1)}
+.efa .toc.end{position:absolute;bottom:0}
+.efa .toc.fix ol{max-height:calc(100vh - var(--efa-top,110px) - 170px)}
+.efa .toc .tt{font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
+.efa .toc ol{position:relative;list-style:none;counter-reset:t;max-height:calc(100vh - 220px);overflow:auto;scrollbar-width:thin}
+.efa .toc li{counter-increment:t}
+.efa .toc ol a{position:relative;display:block;padding:6px 8px 6px 30px;border-radius:10px;font-size:13.5px;line-height:1.35;color:var(--txt);transition:background .2s,color .2s}
+.efa .toc ol a::before{content:counter(t,decimal-leading-zero);position:absolute;left:6px;top:8px;font-size:11px;font-weight:700;color:var(--mut)}
+.efa .toc ol a:hover{background:#fff;color:var(--ink)}
+.efa .toc ol a.on{background:#fff;color:var(--blue);font-weight:600;box-shadow:0 6px 16px -10px rgba(12,14,90,.35)}
+.efa .toc ol a.on::before{color:var(--blue)}
+.efa .toc .cta-mini{display:block;margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--blue);color:#fff;font-size:14px;font-weight:700;text-align:center;transition:background .2s}
+.efa .toc .cta-mini:hover{background:var(--blue2)}
+
+.efa .body{min-width:0}
+.efa .body section{scroll-margin-top:110px}
+.efa .body section+section{margin-top:64px}
+.efa h2{position:relative;font-size:30px;line-height:1.25;font-weight:800;color:var(--ink);margin-bottom:20px}
+.efa h2 .n{display:inline-grid;place-items:center;width:40px;height:40px;margin-right:12px;vertical-align:4px;font-size:15px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--blue3),var(--blue2));clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)}
+.efa h3{font-size:20px;color:var(--ink);font-weight:700;line-height:1.35}
+.efa .body p{margin-bottom:16px}
+.efa .body p:last-child{margin-bottom:0}
+.efa .body p a,.efa .body li a{border-bottom:1px solid rgba(78,108,227,.35);transition:border-color .2s}
+.efa .body p a:hover,.efa .body li a:hover{border-color:var(--blue)}
+.efa mark{background:linear-gradient(transparent 58%,rgba(105,133,239,.25) 58%);color:var(--ink);font-weight:600;padding:0 2px}
+.efa .term{font-weight:700;color:var(--ink)}
+
+.efa ul.dots{list-style:none;margin:6px 0 18px}
+.efa ul.dots li{position:relative;padding:6px 0 6px 28px}
+.efa ul.dots li::before{content:"";position:absolute;left:4px;top:16px;width:9px;height:9px;background:var(--blue);border-radius:2px}
+
+.efa .note{position:relative;margin:22px 0;padding:20px 22px 20px 64px;border-radius:16px;background:var(--soft2);border:1px solid #D9E0FA}
+.efa .note::before{content:"i";position:absolute;left:20px;top:20px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff;background:var(--blue)}
+.efa .note.warn{background:#FFF5EC;border-color:#FBD9B5}
+.efa .note.warn::before{content:"!";background:var(--orange)}
+.efa .note b.t{display:block;color:var(--ink);margin-bottom:4px}
+
+.efa .flow{position:relative;margin:30px 0 8px;padding:30px 24px 26px;border-radius:22px;background:var(--soft);border:1px solid var(--line)}
+.efa .flow-row{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.efa .flow-row::before{content:"";position:absolute;left:12.5%;right:12.5%;top:35px;height:2px;background:repeating-linear-gradient(90deg,var(--blue3) 0 8px,transparent 8px 14px);opacity:.6}
+.efa .pkt{position:absolute;top:30px;left:12.5%;width:12px;height:12px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 6px rgba(78,108,227,.18);animation:efaPkt 5s cubic-bezier(.6,0,.4,1) infinite}
+@keyframes efaPkt{0%{left:12.5%;opacity:0}6%{opacity:1}90%{opacity:1}100%{left:calc(87.5% - 12px);opacity:0}}
+.efa .node{position:relative;text-align:center;z-index:1}
+.efa .hex{position:relative;width:72px;height:72px;margin:0 auto 14px;display:grid;place-items:center;border:5px solid var(--blue);background:#EFEFF2;box-shadow:inset 0 0 0 4px #fff;transition:transform .3s}
+.efa .hex::after{content:"";position:absolute;inset:-5px;background:url(https://static.tildacdn.com/tild3239-3637-4634-b837-613538643232/Group_11.svg) center/100% 100% no-repeat}
+.efa .hex::before{display:none}
+.efa .hex b{position:relative;z-index:1;font-size:40px;line-height:1;font-weight:700;color:var(--blue);letter-spacing:-.01em}
+.efa .node:hover .hex{transform:translateY(-4px)}
+.efa .node h3{font-size:16px;margin-bottom:4px}
+.efa .node p{font-size:14px;line-height:1.45;color:var(--txt);margin:0}
+.efa .node .via{position:absolute;left:100%;top:-2px;transform:translateX(-50%);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--blue2);background:#fff;border:1px solid #D9E0FA;padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:7px}
+.efa .rail{position:relative;height:56px;margin:14px 37.5% 0;border:2px dashed rgba(78,108,227,.45);border-top:0;border-radius:0 0 18px 18px}
+.efa .rail::after{content:"";position:absolute;left:50%;bottom:-26px;width:2px;height:26px;background:rgba(78,108,227,.45);transform:translateX(-50%)}
+.efa .fta{position:relative;max-width:360px;margin:26px auto 0;padding:16px 20px;border-radius:16px;background:var(--dark);color:#E9EAF3;text-align:center;display:flex;align-items:center;gap:14px}
+.efa .fta .hex{width:56px;height:56px;margin:0;flex:none}
+.efa .fta .hex b{font-size:31px}
+.efa .fta h3{color:#fff;font-size:16px;text-align:left}
+.efa .fta p{font-size:14px;line-height:1.4;margin:0;text-align:left;color:rgba(233,234,243,.8)}
+
+.efa .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0 20px}
+.efa .card{padding:20px;border-radius:16px;background:#fff;border:1px solid var(--line);box-shadow:0 14px 30px -24px rgba(12,14,90,.45);transition:transform .25s,box-shadow .25s,border-color .25s}
+.efa .card:hover{transform:translateY(-3px);border-color:#C9D3F8;box-shadow:0 18px 34px -20px rgba(12,14,90,.4)}
+.efa .card .k{display:inline-block;font-size:20px;font-weight:800;color:var(--blue);margin-bottom:6px}
+.efa .card p{font-size:15px;line-height:1.5;margin:0}
+.efa .card.alt{background:var(--soft)}
+.efa .cards.c2{grid-template-columns:1fr 1fr;margin-top:0}
+.efa .card.alt .k{font-size:15px;color:var(--ink)}
+
+.efa .mydate{margin:26px 0 24px;padding:26px;border-radius:22px;background:linear-gradient(135deg,#1F2238,#181922);color:#E9EAF3;position:relative;overflow:hidden}
+.efa .mydate::before{content:"";position:absolute;left:-120px;top:-140px;width:420px;height:320px;background:radial-gradient(closest-side,rgba(78,108,227,.35),transparent)}
+.efa .mydate .tt{font-weight:700;line-height:1.35;position:relative;color:#fff;font-size:19px;margin-bottom:4px}
+.efa .mydate .sub{position:relative;font-size:14.5px;color:rgba(233,234,243,.7);margin-bottom:18px}
+.efa .seg{position:relative;display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.efa .seg button{font:600 14.5px Manrope,Arial,sans-serif;color:#E9EAF3;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);padding:10px 16px;border-radius:30px;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.efa .seg button:hover{border-color:rgba(159,178,255,.6)}
+.efa .seg button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.efa .res{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.efa .res .box{padding:18px 20px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+.efa .res small{display:block;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:rgba(233,234,243,.6)}
+.efa .res strong{display:block;font-size:24px;font-weight:800;color:#fff;margin:4px 0 2px}
+.efa .res .left{font-size:14.5px;color:#9FB2FF;font-weight:600}
+.efa .res .left.hot{color:#FF8C82}
+.efa .res .msg{grid-column:1/-1;font-size:15.5px;line-height:1.6;padding:18px 20px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+.efa .res.fade{animation:efaFade .35s ease}
+@keyframes efaFade{from{opacity:0;transform:translateY(6px)}}
+
+.efa .tbl{width:100%;border-collapse:separate;border-spacing:0;margin:20px 0;font-size:15.5px;line-height:1.5;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.efa .tbl th{background:var(--ink);color:#fff;font-weight:700;text-align:left;padding:14px 16px;font-size:14px;letter-spacing:.02em}
+.efa .tbl td{padding:14px 16px;border-top:1px solid var(--line);vertical-align:top}
+.efa .tbl tr:nth-child(even) td{background:var(--soft)}
+.efa .tbl td:first-child{font-weight:700;color:var(--ink)}
+.efa .tbl .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-weight:700;font-size:14px;background:var(--soft2);color:var(--blue2);white-space:nowrap}
+.efa .tbl .pill.red{background:#FFE9E7;color:#D8443A}
+.efa .tbl .pill.green{background:#E3F6EC;color:#23895A}
+
+.efa .shift{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:22px 0;padding:22px 24px;border-radius:18px;background:var(--soft);border:1px solid var(--line)}
+.efa .shift .was,.efa .shift .now{display:flex;flex-direction:column}
+.efa .shift small{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.efa .shift .was strong{font-size:22px;color:var(--mut);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px}
+.efa .shift .now strong{font-size:26px;color:var(--ink);font-weight:800}
+.efa .shift .arr{width:46px;height:2px;background:var(--blue);position:relative}
+.efa .shift .arr::after{content:"";position:absolute;right:-1px;top:-5px;width:10px;height:10px;border-top:2px solid var(--blue);border-right:2px solid var(--blue);transform:rotate(45deg)}
+.efa .shift .same{margin-left:auto;font-size:14.5px;line-height:1.45;padding-left:18px;border-left:1px solid var(--line)}
+.efa .shift .same b{display:block;color:var(--ink);font-size:17px}
+
+.efa .chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+.efa .chips span{font-size:14.5px;font-weight:600;padding:8px 14px;border-radius:12px;background:#fff;border:1px solid #D9E0FA;color:var(--ink)}
+
+.efa .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch;margin:22px 0}
+.efa .vs .side{padding:22px;border-radius:18px;border:1px solid var(--line)}
+.efa .vs .no{background:#FFF7F6;border-color:#F8D3CF}
+.efa .vs .yes{background:#F2F5FE;border-color:#D9E0FA}
+.efa .vs h3{font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.efa .vs h3 i{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:14px;color:#fff;flex:none}
+.efa .vs .no h3 i{background:var(--red)}
+.efa .vs .yes h3 i{background:var(--blue)}
+.efa .files{display:flex;flex-wrap:wrap;gap:8px}
+.efa .files span{font-size:13.5px;font-weight:700;padding:7px 11px;border-radius:9px;background:#fff;border:1px solid #F1C9C4;color:#B3463D;text-decoration:line-through;text-decoration-thickness:1.5px}
+.efa .xml{font:600 13px/1.6 ui-monospace,Menlo,Consolas,monospace;color:var(--ink);background:#fff;border:1px solid #D9E0FA;border-radius:12px;padding:12px 14px;white-space:pre;overflow:auto}
+.efa .xml em{font-style:normal;color:var(--blue)}
+.efa .vs .ne{align-self:center;font-size:30px;font-weight:800;color:var(--mut)}
+
+.efa .check{margin:18px 0 6px;padding:20px 22px;border-radius:20px;background:var(--soft);border:1px solid var(--line)}
+.efa .check .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px;font-size:14.5px;color:var(--mut);flex-wrap:wrap}
+.efa .check .top b{color:var(--ink)}
+.efa .check .bar{flex:1;min-width:140px;height:6px;border-radius:6px;background:#E1E5F3;overflow:hidden}
+.efa .check .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue3),var(--blue));border-radius:6px;transition:width .35s}
+.efa .check label{display:flex;gap:14px;align-items:flex-start;padding:10px 12px;border-radius:12px;cursor:pointer;font-size:16px;line-height:1.5;transition:background .2s}
+.efa .check label:hover{background:#fff}
+.efa .check input{position:absolute;opacity:0;pointer-events:none}
+.efa .check .bx{flex:none;width:22px;height:22px;margin-top:2px;border-radius:7px;border:2px solid #B9C4EE;background:#fff;display:grid;place-items:center;transition:background .2s,border-color .2s}
+.efa .check .bx::after{content:"";width:6px;height:11px;border-right:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(45deg) translate(-1px,-1px) scale(0);transition:transform .2s}
+.efa .check input:checked+.bx{background:var(--blue);border-color:var(--blue)}
+.efa .check input:checked+.bx::after{transform:rotate(45deg) translate(-1px,-1px) scale(1)}
+.efa .check input:checked~span{color:var(--mut);text-decoration:line-through;text-decoration-color:rgba(139,140,136,.6)}
+.efa .check input:focus-visible+.bx{outline:2px solid var(--blue);outline-offset:2px}
+
+.efa .ways{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0 20px}
+.efa .way{position:relative;padding:22px 20px 20px;border-radius:18px;background:#fff;border:1px solid var(--line);box-shadow:0 14px 30px -24px rgba(12,14,90,.45)}
+.efa .way em{display:block;font-style:normal;font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+.efa .way h3{font-size:17px}
+
+.efa .big14{display:flex;gap:26px;align-items:center;margin:20px 0;padding:24px 26px;border-radius:20px;background:var(--soft);border:1px solid var(--line)}
+.efa .big14 .num{flex:none;font-size:84px;line-height:.9;font-weight:800;background:linear-gradient(135deg,var(--blue3),var(--blue2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.efa .big14 .num small{display:block;font-size:16px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);-webkit-text-fill-color:var(--ink);margin-top:8px}
+.efa .big14 p{margin:0;font-size:16px}
+
+.efa .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:4px 0}
+.efa .two .col{padding:22px;border-radius:18px;border:1px solid var(--line);background:#fff}
+.efa .two .col h3{margin-bottom:10px;font-size:18px}
+.efa .two .col p{font-size:16px}
+
+.efa .fines{display:grid;gap:10px;margin:22px 0}
+.efa .fine{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;padding:18px 22px;border-radius:16px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--red);transition:transform .25s,box-shadow .25s}
+.efa .fine:hover{transform:translateX(4px);box-shadow:0 14px 30px -22px rgba(12,14,90,.45)}
+.efa .fine p{margin:0!important;font-size:16px;font-weight:600;color:var(--ink);line-height:1.45}
+.efa .fine .amt{text-align:right;white-space:nowrap}
+.efa .fine .amt strong{display:block;font-size:22px;font-weight:800;color:#D8443A}
+.efa .fine .amt small{font-size:13px;color:var(--mut)}
+
+.efa .plan{list-style:none;position:relative;margin:24px 0 0}
+.efa .plan::before{content:"";position:absolute;left:29px;top:20px;bottom:20px;width:2px;background:linear-gradient(var(--blue3),rgba(78,108,227,.15))}
+.efa .plan li{position:relative;display:grid;grid-template-columns:60px 1fr;gap:20px;padding:0 0 22px}
+.efa .plan .hex{width:60px;height:60px;margin:0}
+.efa .plan .hex b{font-size:35px}
+.efa .plan .txt{padding:16px 20px;border-radius:16px;background:var(--soft);border:1px solid var(--line);transition:background .25s,border-color .25s,box-shadow .25s}
+.efa .plan li.on .txt{background:#fff;border-color:#C9D3F8;box-shadow:0 14px 30px -22px rgba(12,14,90,.45)}
+.efa .plan h3{font-size:17px;margin-bottom:4px}
+.efa .plan p{margin:0!important;font-size:15.5px;line-height:1.55}
+
+.efa .help{position:relative;margin-top:22px;padding:32px;border-radius:24px;background:var(--dark);color:#E9EAF3;overflow:hidden}
+.efa .help::before{content:"";position:absolute;right:-140px;top:-160px;width:520px;height:380px;background:radial-gradient(closest-side,rgba(78,108,227,.4),transparent)}
+.efa .help::after{content:"";position:absolute;left:-100px;bottom:-160px;width:380px;height:300px;background:radial-gradient(closest-side,rgba(205,166,79,.18),transparent)}
+.efa .help > *{position:relative;z-index:1}
+.efa .help ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;margin:4px 0 26px}
+.efa .help li{position:relative;padding-left:28px;font-size:15.5px;line-height:1.5}
+.efa .help li::before{content:"";position:absolute;left:0;top:4px;width:16px;height:16px;border-radius:50%;background:rgba(101,232,204,.15) center/9px no-repeat;border:1px solid rgba(101,232,204,.55)}
+.efa .help li::after{content:"";position:absolute;left:5.5px;top:7.5px;width:4px;height:7px;border-right:2px solid #65E8CC;border-bottom:2px solid #65E8CC;transform:rotate(45deg)}
+.efa .help .box{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:24px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+.efa .help .box .tt{font-weight:700;line-height:1.35;color:#fff;font-size:19px;margin-bottom:6px}
+.efa .help .box p{font-size:15.5px;line-height:1.6;color:rgba(233,234,243,.8);margin:0}
+.efa .btns{display:flex;flex-direction:column;gap:10px}
+.efa .btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 26px;border-radius:14px;font-weight:700;font-size:15.5px;white-space:nowrap;transition:transform .2s,background .2s}
+.efa .btn:hover{transform:translateY(-2px)}
+.efa .btn.pri{background:#D1F0FC;color:#0C2339}
+.efa .btn.pri::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.75),transparent);transform:skewX(-20deg);animation:efaShine 4s ease-in-out infinite}
+@keyframes efaShine{0%,60%{left:-60%}100%{left:130%}}
+.efa .btn.sec{border:1px solid rgba(255,255,255,.25);color:#fff}
+.efa .btn.sec:hover{background:rgba(255,255,255,.08)}
+.efa .btn img{width:18px;height:18px}
+
+.efa .faq{margin-top:10px;border-top:1px solid var(--line)}
+.efa .faq details{border-bottom:1px solid var(--line)}
+.efa .faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:20px;align-items:center;padding:18px 4px;font-size:17px;font-weight:700;color:var(--ink);transition:color .2s}
+.efa .faq summary::-webkit-details-marker{display:none}
+.efa .faq summary:hover{color:var(--blue)}
+.efa .faq summary i{flex:none;position:relative;width:30px;height:30px;border-radius:50%;background:var(--soft2);transition:background .2s,transform .3s}
+.efa .faq summary i::before,.efa .faq summary i::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:2px;background:var(--blue);transform:translate(-50%,-50%)}
+.efa .faq summary i::after{transform:translate(-50%,-50%) rotate(90deg);transition:transform .3s}
+.efa .faq details[open] summary i{background:var(--blue)}
+.efa .faq details[open] summary i::before{background:#fff}
+.efa .faq details[open] summary i::after{transform:translate(-50%,-50%) rotate(0);background:#fff}
+.efa .faq .a{padding:0 50px 20px 4px;font-size:16px;line-height:1.65}
+
+.efa .sum{padding:28px 30px;border-radius:22px;background:linear-gradient(135deg,var(--soft2),#fff);border:1px solid #D9E0FA}
+.efa .sum .final{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:22px;padding-top:22px;border-top:1px solid #D9E0FA}
+.efa .sum .final b{display:block;color:var(--ink);font-size:18px}
+.efa .sum .final p{margin:2px 0 0!important;font-size:15.5px}
+.efa .sum .btn.pri{background:var(--blue);color:#fff}
+
+.efa .src{list-style:none;counter-reset:s;display:grid;gap:8px;margin-top:6px}
+.efa .src li{counter-increment:s}
+.efa .src a{position:relative;display:block;padding:14px 46px 14px 52px;border-radius:14px;background:var(--soft);border:1px solid var(--line);font-size:15px;line-height:1.45;color:var(--ink);transition:border-color .2s,background .2s}
+.efa .src a::before{content:counter(s);position:absolute;left:16px;top:13px;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:12px;font-weight:800;color:var(--blue);background:var(--soft2)}
+.efa .src a::after{content:"↗";position:absolute;right:18px;top:13px;color:var(--blue);font-weight:700}
+.efa .src a:hover{background:#fff;border-color:#C9D3F8}
+.efa .disc{margin-top:22px;font-size:14px;line-height:1.6;color:var(--mut)}
+
+.efa .more{padding:60px 0 70px;border-top:1px solid var(--line);margin-top:30px}
+.efa .more h2{text-align:center;font-weight:300;font-size:36px;margin-bottom:34px}
+.efa .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.efa .post{display:flex;flex-direction:column;border-radius:20px;background:#fff;border:1px solid var(--line);overflow:hidden;transition:transform .3s,box-shadow .3s}
+.efa .post:hover{transform:translateY(-6px);box-shadow:0 24px 40px -26px rgba(12,14,90,.45)}
+.efa .post .pic{aspect-ratio:16/10;background:var(--soft);display:grid;place-items:center;padding:18px}
+.efa .post .pic img{max-height:100%;width:auto;object-fit:contain;transition:transform .4s}
+.efa .post:hover .pic img{transform:scale(1.05)}
+.efa .post span{padding:16px 20px 20px;font-size:16.5px;font-weight:600;line-height:1.4;color:var(--ink)}
+
+.efa-ready .efa [data-r]{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.efa-ready .efa [data-r].in{opacity:1;transform:none}
+
+@media (max-width:1100px){
+  .efa .layout{grid-template-columns:1fr;gap:0;padding-top:34px}
+  .efa aside{margin-bottom:36px}
+  .efa .toc{width:auto!important;position:static!important}
+  .efa .toc ol{display:none;max-height:none}
+  .efa .toc.open ol{display:block;margin-top:6px}
+  .efa .toc .tt{margin:0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--ink)}
+  .efa .toc .tt::after{content:"";width:8px;height:8px;border-right:2px solid var(--blue);border-bottom:2px solid var(--blue);transform:rotate(45deg);transition:transform .3s}
+  .efa .toc.open .tt::after{transform:rotate(-135deg)}
+  .efa .toc .cta-mini{display:none}
+}
+@media (max-width:900px){
+  .efa .head{padding-top:40px}
+  .efa .ill{width:100%;margin:14px 0 0}
+  .efa h1{font-size:34px}
+  .efa .dates,.efa .cards,.efa .ways,.efa .grid{grid-template-columns:1fr 1fr}
+  .efa .flow-row{grid-template-columns:1fr;gap:6px}
+  .efa .flow-row::before{left:35px;right:auto;top:30px;bottom:30px;width:2px;height:auto;background:repeating-linear-gradient(180deg,var(--blue3) 0 8px,transparent 8px 14px)}
+  .efa .pkt{display:none}
+  .efa .node{display:grid;grid-template-columns:72px 1fr;gap:16px;text-align:left;align-items:center;padding:6px 0}
+  .efa .node .hex{margin:0}
+  .efa .node .via{position:static;transform:none;grid-column:2;justify-self:start;margin:6px 0 0;order:3}
+  .efa .rail{display:none}
+  .efa .fta{margin-top:16px}
+  .efa .help ul{grid-template-columns:1fr}
+  .efa .help .box{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  .efa{font-size:16px}
+  .efa h1{font-size:26px}
+  .efa h2{font-size:24px}
+  .efa h2 .n{width:34px;height:34px;font-size:13px;vertical-align:3px;margin-right:8px}
+  .efa .lead{font-size:17px}
+  .efa .dates,.efa .cards,.efa .ways,.efa .grid,.efa .res,.efa .two{grid-template-columns:1fr}
+  .efa .tldr{padding:76px 20px 22px}
+  .efa .tldr::before{left:20px;top:20px}
+  .efa .vs{grid-template-columns:1fr}
+  .efa .vs .ne{justify-self:center;font-size:26px;line-height:1}
+  .efa .shift{flex-direction:column;align-items:flex-start;gap:10px}
+  .efa .shift .arr{display:none}
+  .efa .cards.c2{grid-template-columns:1fr}
+  .efa .shift .same{margin-left:0;padding-left:0;border-left:0;flex-basis:100%}
+  .efa .big14{flex-direction:column;align-items:flex-start;gap:12px}
+  .efa .fine{grid-template-columns:1fr;gap:6px}
+  .efa .fine .amt{text-align:left}
+  .efa .help{padding:24px 18px}
+  .efa .sum{padding:22px 18px}
+  .efa .faq .a{padding-right:4px}
+
+  .efa .tbl,.efa .tbl tbody,.efa .tbl tr,.efa .tbl td{display:block;width:100%}
+  .efa .tbl{border:0;border-radius:0}
+  .efa .tbl thead{display:none}
+  .efa .tbl tr{margin-bottom:12px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .efa .tbl td{border:0;padding:8px 16px;background:#fff!important}
+  .efa .tbl td:first-child{background:var(--soft)!important;padding:12px 16px}
+  .efa .tbl td[data-l]::before{content:attr(data-l);display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600}
+  .efa .more h2{font-size:28px}
+}
+@media (prefers-reduced-motion:reduce){
+  .efa *,.efa *::before,.efa *::after{animation:none!important;transition:none!important}
+  .efa-ready .efa [data-r]{opacity:1;transform:none}
+}
+</style>
+
+<div class="efa" id="efa">
+
+  <div class="crumbs-band">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Навигация">
+        <a href="https://efix-grp.ae/ru">Главная страница</a><i>/</i>
+        <a href="https://efix-grp.ae/ru/publications">Статьи</a><i>/</i>
+        <span>eInvoicing в ОАЭ</span>
+      </nav>
+    </div>
+  </div>
+
+  <header class="wrap">
+    <div class="head">
+      <div data-r>
+        <div class="tags"><span class="tag">Налоги и бухгалтерия</span><span class="tag gold">Обновлено 25 сентября 2026</span></div>
+        <h1>eInvoicing в ОАЭ: что изменится для бизнеса в <em>2026–2027</em></h1>
+        <div class="meta"><span>Автор: <b>Нана Жоржолиани</b>, бухгалтер EFIX GRP</span><span>Время чтения: <b>≈ 12 минут</b></span></div>
+      </div>
+      <div class="ill" data-r><img src="https://static.tildacdn.com/tild6564-6562-4139-a539-343863663333/Group_6.svg" alt="Электронные счета в ОАЭ" width="652" height="354"></div>
+    </div>
+
+    <div class="lead" data-r>
+      <p>В ОАЭ уже начался переход на обязательную электронную систему выставления счетов — <span class="term">eInvoicing</span>. Это не просто отправка PDF-инвойса по электронной почте. Электронный счёт должен формироваться в <mark>структурированном формате</mark>, передаваться покупателю через аккредитованного провайдера и одновременно попадать в налоговую систему.</p>
+      <p>Пилотная фаза и добровольное подключение стартовали 1 июля 2026 года. Для компаний с годовой выручкой, равной или превышающей AED 50 млн, обязательное применение начинается с 1 января 2027 года. Для компаний с годовой выручкой ниже AED 50 млн — с 1 июля 2027 года. Поэтому 2026 год — это период, когда бизнесу нужно проверить бухгалтерскую систему, данные клиентов и поставщиков, процессы выставления счетов и готовность интеграции с аккредитованным поставщиком услуг (ASP).</p>
+    </div>
+
+    <div class="dates">
+      <div class="date" data-r><small>Уже идёт</small><strong>1 июля 2026</strong><span>Пилотная фаза и добровольное подключение</span></div>
+      <div class="date hot" data-r><small>Выручка ≥ AED 50 млн</small><strong>1 января 2027</strong><span>Обязательный запуск. ASP — до 30 октября 2026</span></div>
+      <div class="date" data-r><small>Выручка &lt; AED 50 млн</small><strong>1 июля 2027</strong><span>Обязательный запуск. ASP — до 31 марта 2027</span></div>
+    </div>
+
+    <div class="tldr" data-r>
+      <div class="tt">Коротко: что нужно знать</div>
+      <p>eInvoicing в ОАЭ применяется к бизнес-операциям <b>B2B и B2G</b> и не зависит только от статуса регистрации по НДС. <b>PDF, Word, скан или обычный инвойс по email не считаются eInvoice.</b> Для обязательного режима компания должна работать через аккредитованного поставщика услуг (ASP).</p>
+    </div>
+  </header>
+
+  <div class="wrap layout">
+    <aside>
+      <nav class="toc" aria-label="Содержание">
+        <div class="tt">Содержание</div>
+        <ol></ol>
+        <a class="cta-mini" href="#popup:projectrus1">Оценить готовность</a>
+      </nav>
+    </aside>
+
+    <article class="body">
+
+      <section id="chto-takoe">
+        <h2 data-r>Что такое eInvoicing в ОАЭ</h2>
+        <div data-r>
+          <p>Электронный счет (eInvoice) — это счет, созданный, переданный и полученный в структурированном электронном формате, который позволяет автоматически обрабатывать данные. В ОАЭ обмен строится на инфраструктуре <span class="term">Peppol</span> и спецификации <span class="term">PINT-AE</span>.</p>
+          <p>Иными словами, привычный PDF остаётся удобным визуальным документом для человека, но сам по себе не является электронной накладной в понимании новой системы. Ключевое значение имеет <mark>структурированный набор данных</mark>, который может быть прочитан бухгалтерской системой, провайдером и Федеральной налоговой службой без ручного ввода.</p>
+        </div>
+      </section>
+
+      <section id="model">
+        <h2 data-r>Как работает система: пятисторонняя модель</h2>
+        <p data-r>Текущая модель eInvoicing в ОАЭ состоит из пяти участников. Поставщик формирует данные счета в своей учетной системе, его аккредитованный поставщик услуг (ASP) проверяет и передает документ через Peppol, ASP покупателя доставляет его в систему покупателя, а соответствующие данные одновременно передаются Федеральной налоговой службе ОАЭ (FTA).</p>
+        <div class="flow" data-r>
+          <div class="flow-row">
+            <span class="pkt" aria-hidden="true"></span>
+            <div class="node"><div class="hex"><b>01</b></div><div><h3>Поставщик</h3><p>Формирует eInvoice</p></div></div>
+            <div class="node"><div class="hex"><b>02</b></div><div><h3>ASP поставщика</h3><p>Проверяет и передаёт структурированные данные</p></div><span class="via">PEPPOL</span></div>
+            <div class="node"><div class="hex"><b>03</b></div><div><h3>ASP покупателя</h3><p>Получает и доставляет eInvoice покупателю</p></div></div>
+            <div class="node"><div class="hex"><b>04</b></div><div><h3>Покупатель</h3><p>Получает и обрабатывает eInvoice в своей системе</p></div></div>
+                      </div>
+          <div class="rail" aria-hidden="true"></div>
+          <div class="fta"><div class="hex"><b>05</b></div><div><h3>FTA</h3><p>Получает данные для налоговой отчётности и контроля</p></div></div>
+        </div>
+      </section>
+
+      <section id="kogo-kasaetsya">
+        <h2 data-r>Кого касается обязательный eInvoicing</h2>
+        <p data-r>Система охватывает лиц, ведущих бизнес в ОАЭ, в отношении бизнес-операций, входящих в установленную сферу применения. Обязанность не ограничивается только компаниями, зарегистрированными по НДС: <mark>отсутствие VAT TRN само по себе не выводит бизнес из системы.</mark></p>
+        <div class="cards">
+          <div class="card" data-r><span class="k">B2B</span><p>Сделки между компаниями.</p></div>
+          <div class="card" data-r><span class="k">B2G</span><p>Поставки и услуги от бизнеса государственным организациям.</p></div>
+          <div class="card" data-r><span class="k">G2B и G2G</span><p>Соответствующие операции государственных организаций.</p></div>
+        </div>
+        <div class="cards c2">
+          <div class="card alt" data-r><span class="k">Free Zone</span><p>Компании свободных экономических зон также не получают автоматического освобождения только из-за регистрации во Free Zone.</p></div>
+          <div class="card alt" data-r><span class="k">Без регистрации по НДС</span><p>Компании без регистрации по НДС могут попасть в систему, если осуществляют соответствующие бизнес-операции.</p></div>
+        </div>
+      </section>
+
+      <section id="isklyucheniya">
+        <h2 data-r>Какие операции пока не входят в обязательный режим</h2>
+        <div data-r>
+          <p>B2C-операции — продажи конечным потребителям, которые не ведут бизнес, — на текущем этапе не подпадают под обязательный eInvoicing. Компания, которая занимается исключительно B2C, не обязана подключаться до отдельного решения о включении таких операций.</p>
+          <p>Также предусмотрены отдельные исключения, в том числе для:</p>
+          <ul class="dots">
+            <li>определённых суверенных операций государственных органов;</li>
+            <li>некоторых международных авиаперевозок пассажиров и сопутствующих услуг;</li>
+            <li>международной авиаперевозки грузов по авианакладной (Airway Bill) — как временное исключение на установленный период;</li>
+            <li>определённых финансовых услуг, освобождённых от НДС или подпадающих под специальный режим нулевой ставки согласно применимым правилам.</li>
+          </ul>
+        </div>
+        <div class="note warn" data-r><b class="t">Важно</b>Исключения следует оценивать по конкретной операции, а не только по названию отрасли. Если у компании одновременно есть B2C и B2B операции, B2B часть может подпадать под eInvoicing.</div>
+      </section>
+
+      <section id="sroki">
+        <h2 data-r>Сроки внедрения eInvoicing в ОАЭ</h2>
+        <p data-r>Внедрение идёт поэтапно. Для бизнеса критичны две даты: крайний срок назначения аккредитованного поставщика услуг (ASP) и дата обязательного запуска.</p>
+
+        <div class="mydate" data-r>
+          <div class="tt">Когда переходить вашей компании</div>
+          <p class="sub">Выберите категорию — покажем ваши даты и сколько дней осталось</p>
+          <div class="seg" role="tablist">
+            <button type="button" class="on" data-k="big">Выручка ≥ AED 50 млн</button>
+            <button type="button" data-k="small">Выручка &lt; AED 50 млн</button>
+            <button type="button" data-k="gov">Гос. организация</button>
+            <button type="button" data-k="b2c">Только B2C</button>
+          </div>
+          <div class="res" aria-live="polite"></div>
+        </div>
+
+        <table class="tbl" data-r>
+          <thead><tr><th>Категория</th><th>Критерий</th><th>Назначить ASP</th><th>Обязательный запуск</th></tr></thead>
+          <tbody>
+            <tr><td>Крупный бизнес</td><td data-l="Критерий">Годовая выручка ≥ AED 50 млн</td><td data-l="Назначить ASP"><span class="pill red">до 30 октября 2026</span></td><td data-l="Обязательный запуск">1 января 2027</td></tr>
+            <tr><td>Остальной бизнес</td><td data-l="Критерий">Годовая выручка &lt; AED 50 млн</td><td data-l="Назначить ASP"><span class="pill">до 31 марта 2027</span></td><td data-l="Обязательный запуск">1 июля 2027</td></tr>
+            <tr><td>Государственные организации</td><td data-l="Критерий">Операции в сфере применения системы</td><td data-l="Назначить ASP"><span class="pill">до 31 марта 2027</span></td><td data-l="Обязательный запуск">1 октября 2027</td></tr>
+            <tr><td>Добровольный режим</td><td data-l="Критерий">Любой бизнес</td><td data-l="Назначить ASP"><span class="pill green">с 1 июля 2026</span></td><td data-l="Обязательный запуск">можно подключиться заранее</td></tr>
+          </tbody>
+        </table>
+        <p data-r>Годовая выручка для определения этапа внедрения берётся из последней финансовой отчётности. Для новой компании, у которой ещё нет такой отчётности, может использоваться прогнозируемая выручка за текущий финансовый год.</p>
+      </section>
+
+      <section id="50mln">
+        <h2 data-r>Что изменилось для компаний с выручкой AED 50 млн и выше</h2>
+        <div class="shift" data-r>
+          <div class="was"><small>Было</small><strong>31 июля 2026</strong></div>
+          <span class="arr" aria-hidden="true"></span>
+          <div class="now"><small>Стало — назначить ASP</small><strong>30 октября 2026</strong></div>
+          <div class="same">Дата запуска не изменилась<b>1 января 2027</b></div>
+        </div>
+        <p data-r>Первоначально для компаний с годовой выручкой, равной или превышающей AED 50 млн, крайним сроком назначения ASP было 31 июля 2026 года. Ministerial Resolution No. 66 of 2026 продлил этот срок до 30 октября 2026 года. Дата обязательного запуска не изменилась: 1 января 2027 года. <mark>Важно: порог включает выручку ровно AED 50 млн</mark>, а не только суммы выше этого значения. Официальная норма: <a href="https://mof.gov.ae/wp-content/uploads/2026/05/Ministerial-Resolution-No.-66-of-2026-Amending-Certain-Provisions-of-Ministerial-Resolution-No.-244-of-2025-Regarding-the-Implementation-of-the-Electronic-Invoicing-System-En-20260514.pdf" target="_blank" rel="noopener">Ministerial Resolution No. 66 of 2026</a>.</p>
+      </section>
+
+      <section id="asp">
+        <h2 data-r>Что такое аккредитованный поставщик услуг (ASP)</h2>
+        <div data-r>
+          <p>ASP — это аккредитованный поставщик услуг, через которого компания подключается к системе eInvoicing. Он обеспечивает технический обмен электронными счетами через Peppol, передачу данных, необходимые проверки и взаимодействие с системой.</p>
+          <p>Для бизнеса выбор ASP — это не только вопрос цены. Нужно проверить:</p>
+          <div class="chips"><span>Совместимость с ERP / бухгалтерской системой</span><span>Объём транзакций</span><span>Интерфейс интеграции (API)</span><span>eCredit Notes</span><span>Безопасность</span><span>SLA</span><span>Техническая поддержка</span><span>Стоимость интеграции</span></div>
+        </div>
+      </section>
+
+      <section id="pdf">
+        <h2 data-r>Можно ли просто продолжить выставлять PDF-инвойсы</h2>
+        <p data-r><b>Нет, если компания уже обязана применять eInvoicing.</b> PDF, Word-файл, скан, изображение или письмо с вложением не считаются eInvoice, потому что в них нет обязательного структурированного формата для автоматизированной передачи и обработки данных.</p>
+        <div class="vs" data-r>
+          <div class="side no"><h3><i>✕</i>Не является eInvoice</h3><div class="files"><span>PDF</span><span>Word</span><span>Скан</span><span>Изображение</span><span>Письмо с вложением</span></div></div>
+          <div class="ne" aria-hidden="true">≠</div>
+          <div class="side yes"><h3><i>✓</i>eInvoice — структурированные данные</h3>
+<div class="xml">&lt;<em>Invoice</em>&gt;
+  &lt;<em>ID</em>&gt;INV-2027-0142&lt;/ID&gt;
+  &lt;<em>IssueDate</em>&gt;2027-01-15&lt;/IssueDate&gt;
+  &lt;<em>SellerTRN</em>&gt;…&lt;/SellerTRN&gt;
+  &lt;<em>TaxTotal</em>&gt;…&lt;/TaxTotal&gt;
+&lt;/Invoice&gt;</div></div>
+        </div>
+        <p data-r>При этом человекочитаемая версия счёта может сохраняться для удобства клиента или внутреннего документооборота. Но юридически и технически ключевым документом в новой системе становится структурированный eInvoice.</p>
+      </section>
+
+      <section id="buhgalteriya">
+        <h2 data-r>Что нужно изменить в бухгалтерии до запуска</h2>
+        <div data-r>
+          <p>Основная сложность eInvoicing обычно не в самом подключении к провайдеру, а в <mark>качестве данных и внутренних процессов</mark>. Если бухгалтерия ведётся вручную, реквизиты контрагентов заполнены неполно или данные счетов не стандартизированы, интеграция может выявить большое количество ошибок.</p>
+          <p>До подключения рекомендуется проверить:</p>
+        </div>
+        <div class="check" data-r>
+          <div class="top"><span>Отметьте, что уже готово: <b class="cnt">0 из 10</b></span><span class="bar"><i></i></span></div>
+          <label><input type="checkbox"><span class="bx"></span><span>корректность юридических названий клиентов и поставщиков;</span></label>
+          <label><input type="checkbox"><span class="bx"></span><span>TRN/TIN и другие регистрационные идентификаторы;</span></label>
+          <label><input type="checkbox"><span class="bx"></span><span>адреса, валюты, условия оплаты и даты операций;</span></label>
+          <label><input type="checkbox"><span class="bx"></span><span>налоговые коды и режим НДС;</span></label>
+          <label><input type="checkbox"><span class="bx"></span><span>номенклатуру товаров и услуг;</span></label>
+          <label><input type="checkbox"><span class="bx"></span><span>процессы корректировочных счетов, авансов, возмещений расходов и исправлений;</span></label>
+          <label><input type="checkbox"><span class="bx"></span><span>разделение B2B и B2C операций;</span></label>
+          <label><input type="checkbox"><span class="bx"></span><span>полноту данных в Zoho Books, Xero, ERP или другой учётной системе;</span></label>
+          <label><input type="checkbox"><span class="bx"></span><span>возможность интеграции через API или иной поддерживаемый канал с выбранным ASP;</span></label>
+          <label><input type="checkbox"><span class="bx"></span><span>процесс контроля отклонённых или не доставленных электронных счетов (eInvoices).</span></label>
+        </div>
+      </section>
+
+      <section id="zoho">
+        <h2 data-r>Что нужно знать компаниям, работающим в Zoho Books, Xero и ERP</h2>
+        <p data-r>Наличие современной бухгалтерской программы не означает автоматическую готовность к eInvoicing в ОАЭ. Система должна уметь передавать все обязательные поля в формате, который поддерживает выбранный ASP, а бизнес-процессы должны соответствовать требованиям PINT-AE.</p>
+        <p data-r>На практике возможны три сценария:</p>
+        <div class="ways">
+          <div class="way" data-r><em>Сценарий 1</em><h3>Прямая интеграция ERP с ASP</h3></div>
+          <div class="way" data-r><em>Сценарий 2</em><h3>Подключение через готовый коннектор</h3></div>
+          <div class="way" data-r><em>Сценарий 3</em><h3>Промежуточное решение, которое преобразует данные из учётной системы в требуемый формат</h3></div>
+        </div>
+        <p data-r>Оптимальный вариант зависит от количества инвойсов, сложности бизнеса и используемого ПО.</p>
+      </section>
+
+      <section id="srok-scheta">
+        <h2 data-r>Срок выставления электронного счёта</h2>
+        <div class="big14" data-r>
+          <div class="num"><span class="cnt14" data-to="14">14</span><small>дней</small></div>
+          <p>Для компаний, зарегистрированных по НДС, применяются сроки, установленные законодательством об НДС. В остальных случаях eInvoice или eCredit Note должны быть выпущены и переданы через систему в установленный срок, который в общем случае <b>не должен превышать 14 дней с даты бизнес-операции</b> (Date of Business Transaction).</p>
+        </div>
+        <p data-r>Дата бизнес-операции (Date of Business Transaction) определяется по установленным правилам и может зависеть от даты фактической операции или получения оплаты. Поэтому автоматизация даты счета и момента признания операции становится важной частью настройки.</p>
+      </section>
+
+      <section id="avansy">
+        <h2 data-r>Авансы и корректировочные счета</h2>
+        <div class="two">
+          <div class="col" data-r><h3>Авансы</h3><p>При получении аванса налоговый инвойс должен оформляться в момент получения оплаты, если это требуется правилами VAT. При последующем финальном выставлении счёта отражается оставшаяся сумма, а не повторно весь контрактный объём.</p></div>
+          <div class="col" data-r><h3>eCredit Note</h3><p>Электронный корректировочный счет (eCredit Note) используется, в частности, при отмене операции, уменьшении стоимости, возврате суммы полностью или частично, а также при исправлении административной или числовой ошибки.</p></div>
+        </div>
+      </section>
+
+      <section id="shtrafy">
+        <h2 data-r>Что будет, если компания не готова к сроку</h2>
+        <p data-r>За нарушения обязательного режима eInvoicing предусмотрены отдельные административные штрафы. Они применяются после того, как компания попадает под обязательную фазу; добровольные участники до своей даты обязательного перехода под эти специальные штрафы не подпадают.</p>
+        <div class="fines">
+          <div class="fine" data-r><p>Не внедрена система или не назначен ASP в установленный срок</p><div class="amt"><strong>AED 5,000</strong><small>за каждый месяц или его часть</small></div></div>
+          <div class="fine" data-r><p>eInvoice не выпущен / не передан вовремя</p><div class="amt"><strong>AED 100</strong><small>за документ, максимум AED 5,000 в месяц</small></div></div>
+          <div class="fine" data-r><p>eCredit Note не выпущен / не передан вовремя</p><div class="amt"><strong>AED 100</strong><small>за документ, максимум AED 5,000 в месяц</small></div></div>
+          <div class="fine" data-r><p>Несвоевременное уведомление FTA о сбое системы</p><div class="amt"><strong>AED 1,000</strong><small>за каждый день задержки или его часть</small></div></div>
+          <div class="fine" data-r><p>Несвоевременное уведомление ASP об изменении зарегистрированных данных</p><div class="amt"><strong>AED 1,000</strong><small>за каждый день задержки или его часть</small></div></div>
+        </div>
+      </section>
+
+      <section id="plan">
+        <h2 data-r>Как подготовиться к eInvoicing: практический план</h2>
+        <ol class="plan">
+          <li data-r><div class="hex"><b>01</b></div><div class="txt"><h3>Определить свою дату обязательного перехода</h3><p>Проверить годовую выручку и категорию компании.</p></div></li>
+          <li data-r><div class="hex"><b>02</b></div><div class="txt"><h3>Провести оценку готовности к eInvoicing</h3><p>Определить, какие операции входят в сферу применения системы и какие исключены.</p></div></li>
+          <li data-r><div class="hex"><b>03</b></div><div class="txt"><h3>Очистить справочные данные</h3><p>Проверить реквизиты компании, клиентов, поставщиков, TIN/TRN и налоговые коды.</p></div></li>
+          <li data-r><div class="hex"><b>04</b></div><div class="txt"><h3>Проверить бухгалтерскую систему</h3><p>Убедиться, что данные можно выгружать и передавать в формате, совместимом с ASP.</p></div></li>
+          <li data-r><div class="hex"><b>05</b></div><div class="txt"><h3>Выбрать аккредитованного поставщика услуг (ASP)</h3><p>Сравнить стоимость, варианты интеграции, API, поддержку и гарантированный уровень сервиса (SLA).</p></div></li>
+          <li data-r><div class="hex"><b>06</b></div><div class="txt"><h3>Настроить интеграцию и тестирование</h3><p>Проверить обычные счета, корректировочные счета, авансы, операции в иностранной валюте и нестандартные сценарии.</p></div></li>
+          <li data-r><div class="hex"><b>07</b></div><div class="txt"><h3>Обновить внутренние процедуры</h3><p>Определить ответственных за ошибки, отклонённые счета и сбои системы.</p></div></li>
+          <li data-r><div class="hex"><b>08</b></div><div class="txt"><h3>Провести контроль перед запуском</h3><p>Проверить техническую и бухгалтерскую готовность до обязательной даты.</p></div></li>
+        </ol>
+      </section>
+
+      <section id="efix">
+        <h2 data-r>Как EFIX GRP может помочь с подготовкой к eInvoicing</h2>
+        <p data-r>EFIX GRP может сопровождать подготовку компании к переходу на электронное выставление счетов со стороны бухгалтерии, налоговых данных и внутренних процессов.</p>
+        <div class="help" data-r>
+          <ul>
+            <li>оценка текущей готовности бухгалтерии к eInvoicing;</li>
+            <li>проверка структуры счетов и справочных данных;</li>
+            <li>проверка режима НДС и налоговых кодов;</li>
+            <li>подготовка данных клиентов и поставщиков;</li>
+            <li>настройка и очистка данных в Zoho Books и других системах;</li>
+            <li>сопровождение выбора ASP с учётом бухгалтерского процесса;</li>
+            <li>координация интеграции между учётной системой и провайдером;</li>
+            <li>тестирование сценариев выставления счетов и корректировочных счетов;</li>
+            <li>подготовка внутренних инструкций для бухгалтерии;</li>
+            <li>дальнейшее <a href="https://efix-grp.ae/ru/accounting" style="color:#9FB2FF">бухгалтерское сопровождение</a>, а также сопровождение по <a href="https://efix-grp.ae/ru/tax_consulting_vat" style="color:#9FB2FF">НДС</a> и <a href="https://efix-grp.ae/ru/tax_consulting_cpt" style="color:#9FB2FF">корпоративному налогу</a>.</li>
+          </ul>
+          <div class="box">
+            <div><div class="tt">Подготовка к eInvoicing с EFIX GRP</div><p>Если вы хотите понять, когда именно ваша компания обязана перейти на eInvoicing и готова ли текущая бухгалтерская система к интеграции, EFIX GRP может провести предварительную оценку и подготовить пошаговый план перехода.</p></div>
+            <div class="btns">
+              <a class="btn pri" href="#popup:projectrus1">Получить оценку</a>
+              <a class="btn sec" href="https://wa.me/971585278077" target="_blank" rel="noopener"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt="">WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq">
+        <h2 data-r>Частые вопросы об eInvoicing в ОАЭ</h2>
+        <div class="faq" data-r>
+          <details open><summary>Когда eInvoicing станет обязательным в ОАЭ?<i></i></summary><div class="a">Для компаний с годовой выручкой, равной или превышающей AED 50 млн, обязательный запуск — 1 января 2027 года. Для компаний с годовой выручкой ниже AED 50 млн — 1 июля 2027 года. Для государственных организаций — 1 октября 2027 года.</div></details>
+          <details><summary>Нужно ли подключаться уже в 2026 году?<i></i></summary><div class="a">Компании с годовой выручкой, равной или превышающей AED 50 млн, должны назначить аккредитованного поставщика услуг (ASP) не позднее 30 октября 2026 года. Этот срок был продлён с 31 июля 2026 года Ministerial Resolution No. 66 of 2026. Кроме того, с 1 июля 2026 года любой бизнес может подключиться добровольно.</div></details>
+          <details><summary>PDF-инвойс считается eInvoice?<i></i></summary><div class="a">Нет. PDF, Word, скан, изображение и обычный email не являются eInvoice. Электронный счёт должен существовать в структурированном формате, пригодном для автоматической обработки и передачи.</div></details>
+          <details><summary>Обязан ли бизнес без VAT-регистрации использовать eInvoicing?<i></i></summary><div class="a">Может быть обязан. Сфера eInvoicing шире статуса регистрации по НДС. Если лицо ведёт бизнес в ОАЭ и осуществляет операции, входящие в сферу применения системы, отсутствие VAT TRN само по себе не освобождает от требований.</div></details>
+          <details><summary>Касается ли eInvoicing компаний во Free Zone?<i></i></summary><div class="a">Да. Регистрация компании в свободной экономической зоне (Free Zone) сама по себе не создаёт освобождение от eInvoicing. Нужно оценивать тип бизнеса и конкретные операции.</div></details>
+          <details><summary>Нужно ли выставлять eInvoice физическому лицу?<i></i></summary><div class="a">На текущем этапе B2C-транзакции с конечными потребителями не входят в обязательный режим. Если покупатель действует в рамках предпринимательской деятельности, такая операция уже может относиться к B2B.</div></details>
+          <details><summary>Что такое ASP?<i></i></summary><div class="a">ASP (Accredited Service Provider) — аккредитованный поставщик услуг, через которого компания передаёт и получает электронные счета в рамках системы eInvoicing в ОАЭ.</div></details>
+          <details><summary>Можно ли выбрать любого IT-провайдера?<i></i></summary><div class="a">Для обязательного eInvoicing используется поставщик услуг, имеющий соответствующую аккредитацию Министерства финансов ОАЭ. При выборе также важно проверить совместимость с бухгалтерской системой и бизнес-процессами.</div></details>
+          <details><summary>Нужно ли менять Zoho Books или другую бухгалтерскую программу?<i></i></summary><div class="a">Не обязательно. Всё зависит от того, поддерживает ли текущая система необходимую интеграцию напрямую или через коннектор / ASP. Сначала следует провести техническую и бухгалтерскую оценку.</div></details>
+          <details><summary>Есть ли штрафы за eInvoicing?<i></i></summary><div class="a">Да. После наступления обязательной даты предусмотрены отдельные штрафы за отсутствие внедрения, несвоевременную отправку eInvoices и eCredit Notes, а также отдельные нарушения уведомительных обязанностей.</div></details>
+        </div>
+      </section>
+
+      <section id="glavnoe">
+        <h2 data-r>Главное для бизнеса</h2>
+        <div class="sum" data-r>
+          <p>eInvoicing в ОАЭ — это переход от обычного документа к автоматизированному обмену структурированными налоговыми и коммерческими данными. Для большинства компаний обязательный режим начнётся в 2027 году, однако <mark>подготовку нельзя откладывать до последнего месяца</mark>: качество бухгалтерских данных, выбор ASP и интеграция с учётной системой требуют времени.</p>
+          <p>Компании, которые заранее приведут в порядок справочные данные и процессы выставления счетов, смогут перейти на новую систему значительно спокойнее и снизить риск технических ошибок, отклонённых документов и штрафов после обязательного запуска.</p>
+          <div class="final">
+            <div><b>Нужна оценка готовности вашей компании к eInvoicing?</b><p>Свяжитесь с EFIX GRP — проверим текущую бухгалтерскую систему, процессы и подготовим план перехода.</p></div>
+            <a class="btn pri" href="#popup:projectrus1">Связаться с EFIX GRP</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="istochniki">
+        <h2 data-r>Официальные источники и нормативная база</h2>
+        <ol class="src" data-r>
+          <li><a href="https://mof.gov.ae/en/about-us/initiatives/einvoicing/" target="_blank" rel="noopener">Министерство финансов ОАЭ — официальный портал eInvoicing</a></li>
+          <li><a href="https://mof.gov.ae/wp-content/uploads/2025/09/Ministerial-Decision-no.-243-of-2025-on-the-Electronic-Invoicing-System.pdf" target="_blank" rel="noopener">Ministerial Decision No. 243 of 2025 — Electronic Invoicing System</a></li>
+          <li><a href="https://mof.gov.ae/wp-content/uploads/2025/09/Ministerial-Decision-No.-244-of-2025-on-the-Implementation-of-the-Electronic-Invoicing-System.pdf" target="_blank" rel="noopener">Ministerial Decision No. 244 of 2025 — Implementation of the Electronic Invoicing System</a></li>
+          <li><a href="https://mof.gov.ae/wp-content/uploads/2026/05/Ministerial-Resolution-No.-66-of-2026-Amending-Certain-Provisions-of-Ministerial-Resolution-No.-244-of-2025-Regarding-the-Implementation-of-the-Electronic-Invoicing-System-En-20260514.pdf" target="_blank" rel="noopener">Ministerial Resolution No. 66 of 2026 — продление срока назначения ASP для компаний с выручкой ≥ AED 50 млн до 30 октября 2026 года</a></li>
+          <li><a href="https://mof.gov.ae/wp-content/uploads/2026/06/UAE-Electronic-Invoicing-Guidelines_V-1.1-01June2026.pdf" target="_blank" rel="noopener">UAE Electronic Invoicing Guidelines, Version 1.1, 1 June 2026</a></li>
+          <li><a href="https://mof.gov.ae/wp-content/uploads/2025/11/Cabinet-Decision-Violations-and-Penalties-eInvoicing-24.11.25.pdf" target="_blank" rel="noopener">Cabinet Decision No. 106 of 2025 — нарушения и административные штрафы по eInvoicing</a></li>
+          <li><a href="https://mof.gov.ae/en/about-us/initiatives/einvoicing/einvoicing-accredited-service-providers-asps/" target="_blank" rel="noopener">Список аккредитованных поставщиков услуг (ASP)</a></li>
+        </ol>
+        <p class="disc">Информация актуальна на 25 сентября 2026 года. Материал носит общий информационный характер и не заменяет индивидуальную налоговую или юридическую консультацию.</p>
+      </section>
+
+    </article>
+  </div>
+
+  <div class="more">
+    <div class="wrap">
+      <h2 data-r>Другие статьи</h2>
+      <div class="grid">
+        <a class="post" href="https://efix-grp.ae/ru/professional_licenses" data-r><div class="pic"><img loading="lazy" src="https://static.tildacdn.com/tild3330-3565-4663-a437-663862373331/img234.png" alt=""></div><span>Профессиональные лицензии в Дубае</span></a>
+        <a class="post" href="https://efix-grp.ae/ru/trademark_registration" data-r><div class="pic"><img loading="lazy" src="https://static.tildacdn.com/tild6538-6332-4861-a136-613361613538/img.svg" alt=""></div><span>Регистрация товарного знака в ОАЭ</span></a>
+        <a class="post" href="https://efix-grp.ae/ru/utomation_of_hr_recruitment" data-r><div class="pic"><img loading="lazy" src="https://static.tildacdn.com/tild3532-3438-4431-b938-623937316434/img22.png" alt=""></div><span>Автоматизация подбора персонала HR</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Article","headline":"eInvoicing в ОАЭ: что изменится для бизнеса в 2026–2027","description":"eInvoicing в ОАЭ: кого касается, сроки 2026–2027, ASP, Peppol, штрафы и подготовка бухгалтерии. Практическое руководство EFIX GRP.","inLanguage":"ru","datePublished":"2026-01-23","dateModified":"2026-09-25","image":"https://static.tildacdn.com/tild6564-6562-4139-a539-343863663333/Group_6.svg","author":{"@type":"Person","name":"Нана Жоржолиани","jobTitle":"Бухгалтер","worksFor":{"@type":"Organization","name":"EFIX GRP","url":"https://efix-grp.ae/ru"}},"publisher":{"@type":"Organization","name":"EFIX GRP","logo":{"@type":"ImageObject","url":"https://static.tildacdn.com/tild3137-6236-4166-b065-363935663233/Group_41.svg"}},"mainEntityOfPage":"https://efix-grp.ae/ru/electronic_invoicing"},
+{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Главная страница","item":"https://efix-grp.ae/ru"},{"@type":"ListItem","position":2,"name":"Статьи","item":"https://efix-grp.ae/ru/publications"},{"@type":"ListItem","position":3,"name":"eInvoicing в ОАЭ","item":"https://efix-grp.ae/ru/electronic_invoicing"}]},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Когда eInvoicing станет обязательным в ОАЭ?","acceptedAnswer":{"@type":"Answer","text":"Для компаний с годовой выручкой, равной или превышающей AED 50 млн, обязательный запуск — 1 января 2027 года. Для компаний с годовой выручкой ниже AED 50 млн — 1 июля 2027 года. Для государственных организаций — 1 октября 2027 года."}},
+{"@type":"Question","name":"Нужно ли подключаться уже в 2026 году?","acceptedAnswer":{"@type":"Answer","text":"Компании с годовой выручкой, равной или превышающей AED 50 млн, должны назначить аккредитованного поставщика услуг (ASP) не позднее 30 октября 2026 года. Этот срок был продлён с 31 июля 2026 года Ministerial Resolution No. 66 of 2026. Кроме того, с 1 июля 2026 года любой бизнес может подключиться добровольно."}},
+{"@type":"Question","name":"PDF-инвойс считается eInvoice?","acceptedAnswer":{"@type":"Answer","text":"Нет. PDF, Word, скан, изображение и обычный email не являются eInvoice. Электронный счёт должен существовать в структурированном формате, пригодном для автоматической обработки и передачи."}},
+{"@type":"Question","name":"Обязан ли бизнес без VAT-регистрации использовать eInvoicing?","acceptedAnswer":{"@type":"Answer","text":"Может быть обязан. Сфера eInvoicing шире статуса регистрации по НДС. Если лицо ведёт бизнес в ОАЭ и осуществляет операции, входящие в сферу применения системы, отсутствие VAT TRN само по себе не освобождает от требований."}},
+{"@type":"Question","name":"Касается ли eInvoicing компаний во Free Zone?","acceptedAnswer":{"@type":"Answer","text":"Да. Регистрация компании в свободной экономической зоне (Free Zone) сама по себе не создаёт освобождение от eInvoicing. Нужно оценивать тип бизнеса и конкретные операции."}},
+{"@type":"Question","name":"Нужно ли выставлять eInvoice физическому лицу?","acceptedAnswer":{"@type":"Answer","text":"На текущем этапе B2C-транзакции с конечными потребителями не входят в обязательный режим. Если покупатель действует в рамках предпринимательской деятельности, такая операция уже может относиться к B2B."}},
+{"@type":"Question","name":"Что такое ASP?","acceptedAnswer":{"@type":"Answer","text":"ASP (Accredited Service Provider) — аккредитованный поставщик услуг, через которого компания передаёт и получает электронные счета в рамках системы eInvoicing в ОАЭ."}},
+{"@type":"Question","name":"Можно ли выбрать любого IT-провайдера?","acceptedAnswer":{"@type":"Answer","text":"Для обязательного eInvoicing используется поставщик услуг, имеющий соответствующую аккредитацию Министерства финансов ОАЭ. При выборе также важно проверить совместимость с бухгалтерской системой и бизнес-процессами."}},
+{"@type":"Question","name":"Нужно ли менять Zoho Books или другую бухгалтерскую программу?","acceptedAnswer":{"@type":"Answer","text":"Не обязательно. Всё зависит от того, поддерживает ли текущая система необходимую интеграцию напрямую или через коннектор / ASP. Сначала следует провести техническую и бухгалтерскую оценку."}},
+{"@type":"Question","name":"Есть ли штрафы за eInvoicing?","acceptedAnswer":{"@type":"Answer","text":"Да. После наступления обязательной даты предусмотрены отдельные штрафы за отсутствие внедрения, несвоевременную отправку eInvoices и eCredit Notes, а также отдельные нарушения уведомительных обязанностей."}}
+]}
+]}
+</script>
+
+<script>
+(function(){
+  var root=document.getElementById('efa');if(!root||root.dataset.init)return;root.dataset.init=1;
+  var D=document.documentElement;
+  var io='IntersectionObserver' in window;
+  if(io&&!matchMedia('(prefers-reduced-motion:reduce)').matches)D.classList.add('efa-ready');
+
+  var els=root.querySelectorAll('[data-r]');
+  if(io){
+    var ob=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');ob.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:.08});
+    els.forEach(function(el){ob.observe(el);});
+  } else els.forEach(function(el){el.classList.add('in');});
+
+  var toc=root.querySelector('.toc'),list=toc.querySelector('ol'),secs=[].slice.call(root.querySelectorAll('.body section[id]')),links=[];
+  secs.forEach(function(s){var h=s.querySelector('h2');if(!h)return;var li=document.createElement('li'),a=document.createElement('a');a.href='#'+s.id;a.textContent=h.textContent.trim();li.appendChild(a);list.appendChild(li);links.push(a);
+    a.addEventListener('click',function(ev){ev.preventDefault();var y=s.getBoundingClientRect().top+scrollY-topOff()+4;scrollTo({top:y,behavior:'smooth'});if(innerWidth<=1100)toc.classList.remove('open');});});
+  toc.querySelector('.tt').addEventListener('click',function(){if(innerWidth<=1100)toc.classList.toggle('open');});
+
+  function topOff(){var e=document.querySelector('.efx-hdr');if(e)return e.offsetHeight+18;
+    var mh=document.querySelector('.efm');if(mh)return mh.classList.contains('hide')?24:mh.offsetHeight+16;
+    var el=document.elementFromPoint(innerWidth/2,4),v=24;
+    while(el&&el!==document.body){if(getComputedStyle(el).position==='fixed'){var r=el.getBoundingClientRect();if(r.top<=0&&r.height<200)v=Math.max(v,r.bottom+16);break;}el=el.parentElement;}
+    return v;}
+
+  var aside=root.querySelector('aside'),layout=root.querySelector('.layout');
+  function pin(){
+    if(innerWidth<=1100){toc.classList.remove('fix','end');toc.style.left='';return;}
+    var t=topOff();root.style.setProperty('--efa-top',t+'px');
+    var a=aside.getBoundingClientRect(),l=layout.getBoundingClientRect(),h=toc.offsetHeight;
+    if(a.top>=t){toc.classList.remove('fix','end');toc.style.left='';}
+    else if(l.bottom-40<t+h){toc.classList.remove('fix');toc.classList.add('end');toc.style.left='';}
+    else{toc.classList.add('fix');toc.classList.remove('end');toc.style.left=a.left+'px';}
+  }
+
+  function spy(){var t=Math.max(topOff()+80,innerHeight*.3),cur=0;secs.forEach(function(s,i){if(s.getBoundingClientRect().top<=t)cur=i;});links.forEach(function(a,i){a.classList.toggle('on',i===cur);});var on=links[cur];if(on&&toc.classList.contains('fix')){var r=on.offsetTop;if(r<list.scrollTop||r>list.scrollTop+list.clientHeight-40)list.scrollTop=r-60;}}
+  var tk=false;function onS(){if(tk)return;tk=true;requestAnimationFrame(function(){pin();spy();tk=false;});}
+  addEventListener('scroll',onS,{passive:true});addEventListener('resize',onS);addEventListener('load',onS);onS();
+  var mh=document.querySelector('.efm');if(mh&&window.MutationObserver)new MutationObserver(onS).observe(mh,{attributes:true,attributeFilter:['class']});
+
+  if(io){var po=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle('on',e.isIntersecting);});},{rootMargin:'-40% 0px -40% 0px'});
+    root.querySelectorAll('.plan li').forEach(function(li){po.observe(li);});}
+
+  var DATA={
+    big:{asp:'2026-10-30',go:'2027-01-01',aspT:'30 октября 2026',goT:'1 января 2027'},
+    small:{asp:'2027-03-31',go:'2027-07-01',aspT:'31 марта 2027',goT:'1 июля 2027'},
+    gov:{asp:'2027-03-31',go:'2027-10-01',aspT:'31 марта 2027',goT:'1 октября 2027'},
+    b2c:{msg:'B2C-операции — продажи конечным потребителям, которые не ведут бизнес, — на текущем этапе не подпадают под обязательный eInvoicing. Но если есть и B2B-операции, B2B часть может подпадать под eInvoicing. С 1 июля 2026 года подключиться можно добровольно.'}
+  };
+  var res=root.querySelector('.res');
+  function days(d){var t=new Date(d+'T00:00:00+04:00')-new Date();return Math.ceil(t/864e5);}
+  function plural(n){var a=Math.abs(n)%100,b=a%10;if(a>10&&a<20)return 'дней';if(b===1)return 'день';if(b>1&&b<5)return 'дня';return 'дней';}
+  function left(d){var n=days(d);if(n<0)return '<span class="left hot">срок прошёл</span>';if(n===0)return '<span class="left hot">сегодня</span>';return '<span class="left'+(n<=60?' hot':'')+'">осталось '+n+' '+plural(n)+'</span>';}
+  function show(k){var x=DATA[k];res.classList.remove('fade');void res.offsetWidth;res.classList.add('fade');
+    res.innerHTML=x.msg?'<div class="msg">'+x.msg+'</div>':'<div class="box"><small>Назначить ASP</small><strong>до '+x.aspT+'</strong>'+left(x.asp)+'</div><div class="box"><small>Обязательный запуск</small><strong>'+x.goT+'</strong>'+left(x.go)+'</div>';}
+  root.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){root.querySelectorAll('.seg button').forEach(function(o){o.classList.toggle('on',o===b);});show(b.dataset.k);});});
+  show('big');
+
+  var ch=root.querySelectorAll('.check input'),cnt=root.querySelector('.check .cnt'),bar=root.querySelector('.check .bar i');
+  function upd(){var n=0;ch.forEach(function(c){if(c.checked)n++;});cnt.textContent=n+' из '+ch.length;bar.style.width=(n/ch.length*100)+'%';}
+  ch.forEach(function(c){c.addEventListener('change',upd);});upd();
+
+  var c14=root.querySelector('.cnt14');
+  if(io&&c14&&D.classList.contains('efa-ready')){var o14=new IntersectionObserver(function(es){if(!es[0].isIntersecting)return;o14.disconnect();var s=null;function st(ts){if(!s)s=ts;var p=Math.min((ts-s)/900,1);c14.textContent=Math.round(14*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(st);}c14.textContent='0';requestAnimationFrame(st);},{threshold:.6});o14.observe(c14);}
+})();
+</script>
