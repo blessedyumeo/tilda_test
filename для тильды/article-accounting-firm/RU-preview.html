@@ -77,6 +77,108 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap">
 <style>body{margin:0;background:#fff}</style></head><body>
 <style>
+.efx-hdr-space{height:98px}
+@media (max-width:1100px){.efx-hdr-space{height:70px}}
+.efx-hdr{--t:#FFFDF6;--m:#8B8C88;--gold:#CDA64F;--teal:#65E8CC;position:fixed;top:0;left:0;right:0;z-index:9990;font-family:Manrope,Arial,sans-serif;background:rgba(27,28,37,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,253,246,.07);transition:background .3s}
+.efx-hdr{background:#181922}
+.efx-hdr *{box-sizing:border-box;margin:0;padding:0}
+.efx-hdr a{color:inherit;text-decoration:none}
+.efx-hdr .bar{position:absolute;left:0;top:0;height:3px;width:0;background:linear-gradient(90deg,var(--gold),#E9C77C);transition:width .1s linear}
+.efx-hdr .top{max-width:1240px;margin:0 auto;padding:8px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:13px;color:var(--m)}
+.efx-hdr .top .soc{display:flex;gap:10px;align-items:center}
+.efx-hdr .top .soc img{width:16px;height:16px;opacity:.7;transition:opacity .2s,transform .2s}
+.efx-hdr .top .soc a:hover img{opacity:1;transform:translateY(-1px)}
+.efx-hdr .top a:hover{color:var(--t)}
+.efx-hdr .lang{padding:2px 8px;border:1px solid rgba(255,253,246,.2);border-radius:8px;font-weight:600}
+.efx-hdr .row{max-width:1240px;margin:0 auto;padding:12px 20px 14px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.efx-hdr .logo img{height:42px;width:auto;display:block}
+.efx-hdr nav{display:flex;align-items:center;gap:4px}
+.efx-hdr .it{position:relative}
+.efx-hdr .it > a{display:flex;align-items:center;gap:6px;padding:10px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--m);transition:color .2s,background .2s}
+.efx-hdr .it > a:hover,.efx-hdr .it:focus-within > a{color:var(--t);background:rgba(255,253,246,.05)}
+.efx-hdr .it.cur > a{color:var(--t)}
+.efx-hdr .it.cur > a::before{content:"";position:absolute;left:12px;right:12px;bottom:3px;height:2px;border-radius:2px;background:var(--teal)}
+.efx-hdr .dd > a::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);margin-left:2px}
+.efx-hdr .sub{position:absolute;top:100%;left:0;min-width:280px;padding:8px;border-radius:16px;background:#23252E;border:1px solid #38393C;box-shadow:0 20px 40px -12px rgba(0,0,0,.6);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s,transform .2s,visibility .2s}
+.efx-hdr .it:hover .sub,.efx-hdr .it:focus-within .sub{opacity:1;visibility:visible;transform:none}
+.efx-hdr .sub a{display:block;padding:10px 12px;border-radius:10px;font-size:14px;color:rgba(255,253,246,.8)}
+.efx-hdr .sub a:hover{background:rgba(101,232,204,.1);color:var(--t)}
+.efx-hdr .burger{display:none;width:44px;height:44px;border:0;background:none;cursor:pointer;position:relative}
+.efx-hdr .burger span,.efx-hdr .burger::before,.efx-hdr .burger::after{content:"";position:absolute;left:10px;right:10px;height:2px;border-radius:2px;background:var(--t);transition:transform .3s,opacity .3s}
+.efx-hdr .burger::before{top:14px}.efx-hdr .burger span{top:21px}.efx-hdr .burger::after{top:28px}
+.efx-hdr.open .burger::before{transform:translateY(7px) rotate(45deg)}
+.efx-hdr.open .burger span{opacity:0}
+.efx-hdr.open .burger::after{transform:translateY(-7px) rotate(-45deg)}
+@media (max-width:1100px){
+  .efx-hdr .top{display:none}
+  .efx-hdr .burger{display:block}
+  .efx-hdr nav{position:absolute;left:0;right:0;top:100%;height:calc(100vh - 70px);height:calc(100dvh - 70px);flex-direction:column;align-items:stretch;gap:0;padding:12px 20px 40px;background:#1B1C25;overflow:auto;opacity:0;visibility:hidden;transform:translateY(-10px);transition:opacity .25s,transform .25s,visibility .25s}
+  .efx-hdr.open nav{opacity:1;visibility:visible;transform:none}
+  .efx-hdr .it > a{font-size:18px;padding:14px 4px;border-bottom:1px solid rgba(255,253,246,.07);border-radius:0;color:var(--t)}
+  .efx-hdr .it.cur > a::before{display:none}
+  .efx-hdr .dd > a::after{display:none}
+  .efx-hdr .sub{position:static;opacity:1;visibility:visible;transform:none;background:none;border:0;box-shadow:none;padding:4px 0 8px 12px;min-width:0}
+  .efx-hdr .sub a{font-size:15px;color:var(--m)}
+  .efx-hdr .mob-soc{display:flex!important;gap:14px;margin-top:24px}
+  .efx-hdr .mob-soc img{width:26px;height:26px}
+  .efx-hdr .mob-ct{display:block!important;margin-top:18px;color:var(--m);font-size:15px;line-height:1.8}
+}
+.efx-hdr .mob-soc,.efx-hdr .mob-ct{display:none}
+</style>
+<div class="efx-hdr-space" id="efx-hdr-space"></div>
+<header class="efx-hdr" id="efx-hdr">
+  <div class="bar"></div>
+  <div class="top">
+    <a href="mailto:hello@efix-grp.ae">hello@efix-grp.ae</a>
+    <a href="tel:+971585278077">+971 58 5278077</a>
+    <div class="soc">
+      <a href="https://wa.me/971585278077" target="_blank" rel="noopener" aria-label="WhatsApp"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt=""></a>
+      <a href="https://instagram.com/efix_grp" target="_blank" rel="noopener" aria-label="Instagram"><img src="https://static.tildacdn.com/tild3237-6338-4735-a432-623535373363/free-icon-instagram-.svg" alt=""></a>
+      <a href="https://www.facebook.com/efixgroup" target="_blank" rel="noopener" aria-label="Facebook"><img src="https://static.tildacdn.com/tild6333-6464-4563-a163-383032326463/free-icon-facebook-1.svg" alt=""></a>
+      <a href="https://t.me/efix_grp" target="_blank" rel="noopener" aria-label="Telegram"><img src="https://static.tildacdn.com/tild6136-3365-4130-a336-373630316562/telegram_1.svg" alt=""></a>
+      <a href="https://youtube.com/@efix_grp" target="_blank" rel="noopener" aria-label="YouTube"><img src="https://static.tildacdn.com/tild3033-3237-4564-b637-366136313164/YouTube.svg" alt=""></a>
+    </div>
+    <a class="lang" href="https://efix-grp.ae/how-to-choose-an-accounting-firm-in-dubai">EN</a>
+  </div>
+  <div class="row">
+    <a class="logo" href="https://efix-grp.ae/ru" aria-label="EFIX GRP"><img src="https://static.tildacdn.com/tild3137-6236-4166-b065-363935663233/Group_41.svg" alt="EFIX GRP"></a>
+    <nav>
+      <div class="it"><a href="https://efix-grp.ae/ru">О нас</a></div>
+      <div class="it"><a href="https://efix-grp.ae/ru/accounting">Бухгалтерия и кадры</a></div>
+      <div class="it dd"><a href="https://efix-grp.ae/ru/recruitment">Рекрутмент</a>
+        <div class="sub"><a href="https://efix-grp.ae/ru/recruitment">Рекрутмент</a><a href="https://efix-grp.ae/applying_visa_uae">Оформление визы в ОАЭ</a></div></div>
+      <div class="it dd"><a href="https://efix-grp.ae/ru/tax_consulting_vat">Консалтинг</a>
+        <div class="sub"><a href="https://efix-grp.ae/ru/tax_consulting_vat">Налоговый консалтинг по VAT</a><a href="https://efix-grp.ae/ru/tax_consulting_cpt">Налоговый консалтинг по CPT</a></div></div>
+      <div class="it dd"><a href="https://efix-grp.ae/company_registration_in_uae_mainland">Регистрация компании в ОАЭ</a>
+        <div class="sub"><a href="https://efix-grp.ae/company_registration_in_uae_mainland">Регистрация компании в ОАЭ Mainland</a><a href="https://efix-grp.ae/company_registration_in_uae_maydan">Регистрация компании в ОАЭ Meydan</a><a href="https://efix-grp.ae/ru/ajman_free_zone_business_setup">Свободная зона Аджман</a></div></div>
+      <div class="it cur"><a href="https://efix-grp.ae/ru/publications">Публикации</a></div>
+      <div class="mob-ct"><a href="mailto:hello@efix-grp.ae">hello@efix-grp.ae</a><br><a href="tel:+971585278077">+971 58 5278077</a></div>
+      <div class="mob-soc">
+        <a href="https://wa.me/971585278077" aria-label="WhatsApp"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt=""></a>
+        <a href="https://t.me/efix_grp" aria-label="Telegram"><img src="https://static.tildacdn.com/tild6136-3365-4130-a336-373630316562/telegram_1.svg" alt=""></a>
+        <a href="https://instagram.com/efix_grp" aria-label="Instagram"><img src="https://static.tildacdn.com/tild3237-6338-4735-a432-623535373363/free-icon-instagram-.svg" alt=""></a>
+        <a href="https://youtube.com/@efix_grp" aria-label="YouTube"><img src="https://static.tildacdn.com/tild3033-3237-4564-b637-366136313164/YouTube.svg" alt=""></a>
+      </div>
+    </nav>
+    <button class="burger" type="button" aria-label="Меню"><span></span></button>
+  </div>
+</header>
+<script>
+(function(){
+  var h=document.getElementById('efx-hdr');if(!h)return;
+  var bar=h.querySelector('.bar'),b=h.querySelector('.burger'),sp=document.getElementById('efx-hdr-space');
+
+  function fit(){if(sp)sp.style.height=h.offsetHeight+'px';}
+  window.addEventListener('resize',fit);window.addEventListener('load',fit);fit();
+
+  document.documentElement.style.scrollPaddingTop=(h.offsetHeight+10)+'px';
+  function prog(){var d=document.documentElement,max=d.scrollHeight-d.clientHeight;bar.style.width=(max>0?(d.scrollTop||document.body.scrollTop)/max*100:0)+'%';}
+  window.addEventListener('scroll',prog,{passive:true});prog();
+  b.addEventListener('click',function(){h.classList.toggle('open');document.body.style.overflow=h.classList.contains('open')?'hidden':'';});
+  h.querySelectorAll('nav a').forEach(function(a){a.addEventListener('click',function(){h.classList.remove('open');document.body.style.overflow='';});});
+})();
+</script>
+<style>
 .efb{--ink:#0C0E5A;--txt:#2B2E57;--mut:#8B8C88;--blue:#4E6CE3;--blue2:#4A66D7;--blue3:#6985EF;--soft:#F8F8FB;--soft2:#EEF1FC;--line:#E4E6F0;--dark:#181922;--gold:#CDA64F;--red:#F95D51;--orange:#F69A38;--green:#3FB27F;
   font-family:Manrope,Arial,sans-serif;color:var(--txt);background:#fff;font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:clip}
 .efb *{box-sizing:border-box;margin:0;padding:0}
@@ -392,4 +494,61 @@
   addEventListener('scroll',onS,{passive:true});addEventListener('resize',onS);addEventListener('load',onS);onS();
 })();
 </script>
+<style>
+.efx-ftr{--t:#FFFDF6;--m:#8B8C88;--teal:#65E8CC;position:relative;overflow:hidden;font-family:Manrope,Arial,sans-serif;color:var(--t);background:#16171F;border-top:1px solid rgba(255,253,246,.07)}
+.efx-ftr *{box-sizing:border-box;margin:0;padding:0}
+.efx-ftr a{color:inherit;text-decoration:none}
+.efx-ftr::before{content:"";position:absolute;left:50%;top:-260px;width:900px;height:420px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(79,189,179,.22),transparent);pointer-events:none}
+.efx-ftr .in{position:relative;max-width:1240px;margin:0 auto;padding:64px 20px 28px;display:grid;grid-template-columns:1.1fr 1.6fr 1fr;gap:40px}
+.efx-ftr .logo img{height:46px;width:auto;display:block;margin-bottom:18px}
+.efx-ftr .about{font-size:14px;color:var(--m);line-height:1.6;max-width:300px}
+.efx-ftr h4{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--m);margin-bottom:16px}
+.efx-ftr .links{columns:2;column-gap:28px}
+.efx-ftr .links a{display:block;break-inside:avoid;padding:6px 0;font-size:15px;color:rgba(255,253,246,.82);transition:color .2s,transform .2s}
+.efx-ftr .links a:hover{color:var(--teal);transform:translateX(3px)}
+.efx-ftr .ct a{display:block;font-size:18px;font-weight:600;margin-bottom:6px;transition:color .2s}
+.efx-ftr .ct a:hover{color:var(--teal)}
+.efx-ftr .soc{display:flex;gap:12px;margin-top:22px}
+.efx-ftr .soc a{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:rgba(255,253,246,.06);border:1px solid rgba(255,253,246,.1);transition:background .2s,transform .2s,border-color .2s}
+.efx-ftr .soc a:hover{background:rgba(101,232,204,.12);border-color:rgba(101,232,204,.4);transform:translateY(-3px)}
+.efx-ftr .soc img{width:22px;height:22px}
+.efx-ftr .bot{position:relative;max-width:1240px;margin:0 auto;padding:20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid rgba(255,253,246,.07);font-size:13px;color:var(--m)}
+.efx-ftr .bot a:hover{color:var(--t)}
+@media (max-width:960px){.efx-ftr .in{grid-template-columns:1fr;gap:32px;padding-top:48px}}
+@media (max-width:520px){.efx-ftr .links{columns:1}}
+</style>
+<footer class="efx-ftr">
+  <div class="in">
+    <div>
+      <a class="logo" href="https://efix-grp.ae/ru"><img src="https://static.tildacdn.com/tild3137-6236-4166-b065-363935663233/Group_41.svg" alt="EFIX GRP"></a>
+    </div>
+    <div>
+      <h4>Услуги</h4>
+      <div class="links">
+        <a href="https://efix-grp.ae/ru">О нас</a>
+        <a href="https://efix-grp.ae/ru/accounting">Бухгалтерия и кадры</a>
+        <a href="https://efix-grp.ae/ru/recruitment">Подбор персонала</a>
+        <a href="https://efix-grp.ae/applying_visa_uae">Оформление визы в ОАЭ</a>
+        <a href="https://efix-grp.ae/ru/tax_consulting_vat">Налоговый консалтинг по VAT</a>
+        <a href="https://efix-grp.ae/ru/tax_consulting_cpt">Налоговый консалтинг по CPT</a>
+        <a href="https://efix-grp.ae/company_registration_in_uae_mainland">Регистрация компании в ОАЭ Mainland</a>
+        <a href="https://efix-grp.ae/company_registration_in_uae_maydan">Регистрация компании в ОАЭ Meydan</a>
+        <a href="https://efix-grp.ae/ru/publications">Публикации</a>
+      </div>
+    </div>
+    <div>
+      <h4>Наши контакты</h4>
+      <div class="ct"><a href="mailto:hello@efix-grp.ae">hello@efix-grp.ae</a><a href="tel:+971585278077">+971 58 5278077</a></div>
+      <h4 style="margin-top:28px">Социальные сети</h4>
+      <div class="soc">
+        <a href="https://www.facebook.com/efixgroup" target="_blank" rel="noopener" aria-label="Facebook"><img src="https://static.tildacdn.com/tild6333-6464-4563-a163-383032326463/free-icon-facebook-1.svg" alt=""></a>
+        <a href="https://instagram.com/efix_grp" target="_blank" rel="noopener" aria-label="Instagram"><img src="https://static.tildacdn.com/tild3237-6338-4735-a432-623535373363/free-icon-instagram-.svg" alt=""></a>
+        <a href="https://wa.me/971585278077" target="_blank" rel="noopener" aria-label="WhatsApp"><img src="https://static.tildacdn.com/tild3739-6536-4737-b663-376535323637/free-icon-whatsapp-3.svg" alt=""></a>
+        <a href="https://t.me/efix_grp" target="_blank" rel="noopener" aria-label="Telegram"><img src="https://static.tildacdn.com/tild6136-3365-4130-a336-373630316562/telegram_1.svg" alt=""></a>
+        <a href="https://youtube.com/@efix_grp" target="_blank" rel="noopener" aria-label="YouTube"><img src="https://static.tildacdn.com/tild3033-3237-4564-b637-366136313164/YouTube.svg" alt=""></a>
+      </div>
+    </div>
+  </div>
+  <div class="bot"><span>2023 ⓒ EFIX GRP</span><a href="https://efix-grp.ae/ru/policy">Политика конфиденциальности</a></div>
+</footer>
 </body></html>
