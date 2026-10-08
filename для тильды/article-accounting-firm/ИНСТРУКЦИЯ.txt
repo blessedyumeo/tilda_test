@@ -1,0 +1,28 @@
+СТАТЬЯ «КАК ВЫБРАТЬ БУХГАЛТЕРСКУЮ КОМПАНИЮ В ДУБАЕ» (RU + EN) — только статья, без шапки и подвала
+
+Файлы на каждый язык:
+ RU-block-tilda.html / EN-block-tilda.html — статья: вставить в один блок T123 «HTML-код».
+ RU-head-tilda.html  / EN-head-tilda.html  — код для HEAD: Настройки страницы → Ещё → «HTML-код для вставки внутрь HEAD».
+                                             canonical, og-теги и JSON-LD (Organization, Person, BlogPosting, BreadcrumbList) из ТЗ.
+ RU-preview.html     / EN-preview.html     — превью целиком (для Vercel/показа), стоит noindex.
+
+По ТЗ:
+ — Один H1, разделы H2, подразделы H3. Навигация, автор, «Содержание», «Другие статьи» — не заголовки.
+ — Содержание — nav со ссылками на разделы (работает и без JavaScript).
+ — FAQ, рейтингов, отзывов нет. В конце только ссылка на страницу бухгалтерских услуг.
+ — Тексты — дословно из ТЗ (RU и EN — каждый из своего документа).
+
+Настройки страницы в Tilda:
+ RU: адрес /ru/how-to-choose-an-accounting-firm-in-dubai, язык ru,
+     title «Как выбрать бухгалтерскую компанию в Дубае | EFIX GRP», description — из ТЗ.
+ EN: адрес /how-to-choose-an-accounting-firm-in-dubai, язык en-GB,
+     title «How to Choose an Accounting Firm in Dubai | EFIX GRP», description — из ТЗ.
+ Title и description задаются в настройках страницы (в HEAD-код их не дублировать).
+
+ДО ПУБЛИКАЦИИ (открытые пункты):
+ 1. Иллюстрация вверху — временная (нарисована в стиле сайта). Заменить на картинку из статьи
+    «Как открыть онлайн-бизнес в ОАЭ», когда будет ссылка на неё.
+ 2. Даты: добавить datePublished в BlogPosting (HEAD-код) и видимую дату под H1 — по факту публикации.
+ 3. hreflang (две строки alternate) добавить в HEAD обеих версий только после публикации обеих страниц.
+ 4. Если в Tilda уже есть Organization с другим @id — заменить @id в HEAD-коде.
+ 5. Ссылки «Другие статьи» на английском сайте (/uae_resident, /business_in_the_uae) — проверить.
